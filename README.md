@@ -7,6 +7,14 @@
 
 Платформы: **Android · iOS · Web** (интерфейс на русском языке).
 
+## 🌐 Играть онлайн
+
+Веб-версия опубликована на **GitHub Pages**:
+
+**https://verusdev.github.io/code_kids/**
+
+Исходный код: **https://github.com/verusdev/code_kids**
+
 ## Что внутри
 
 | Игра | Чему учит | Механика |
@@ -120,6 +128,21 @@ flutter test
 flutter build web --release
 # раздать собранную версию:
 python -m http.server 8080 --directory build/web
+
+# Сборка для GitHub Pages (учитывает адрес /code_kids/)
+flutter build web --release --base-href=/code_kids/
+# обновить опубликованную версию: скопировать build/web → docs/ и запушить
+# (Pages настроен на ветку main, папку /docs)
+```
+
+Публикация обновлений на GitHub Pages:
+
+```bash
+flutter build web --release --base-href=/code_kids/
+# Windows: обновить docs/, сохранив .nojekyll (нужен, чтобы Pages не гонял Jekyll)
+Remove-Item docs\* -Recurse -Force -Exclude .nojekyll
+Copy-Item build\web\* docs\ -Recurse -Force
+git add -A && git commit -m "Обновление веб-сборки" && git push
 ```
 
 Зависимости: только `shared_preferences` (локальное сохранение прогресса).
@@ -210,3 +233,6 @@ lib/
   шапкой «🏆 Испытание / название игры», счётчиком «1/10» и бегущим таймером,
   при этом подсказки скрыты; выход из уровня прерывает испытание и показывает
   итог («Испытание прервано», «Заданий пройдено 0 из 10», время).
+- ✅ Опубликованная веб-версия на GitHub Pages (https://verusdev.github.io/code_kids/):
+  главный экран, список из 20 уроков Python и запуск режима «Испытание» прямо
+  из онлайна («🏆 Испытание / Робот-Лабиринт», «1/10», таймер, скрытые подсказки).
