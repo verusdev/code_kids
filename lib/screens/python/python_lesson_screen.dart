@@ -7,9 +7,9 @@ import '../../python/python_runner.dart';
 import '../../services/daily_service.dart';
 import '../../services/progress_service.dart';
 import '../../services/sound_service.dart';
-import '../../widgets/code_editor.dart';
 import '../../widgets/code_widgets.dart';
 import '../../widgets/kid_button.dart';
+import '../../widgets/python_code_editor.dart';
 import '../../widgets/task_speech_button.dart';
 import '../../widgets/turtle_canvas.dart';
 
@@ -211,60 +211,25 @@ class _PythonLessonScreenState extends State<PythonLessonScreen> {
                       color: _accent,
                     ),
                     const SizedBox(height: 8),
-                    CodeEditor(controller: _controller, focusNode: _focusNode),
-                    const SizedBox(height: 10),
-                    QuickCodeBar(
+                    PythonCodeEditor(
                       controller: _controller,
                       focusNode: _focusNode,
-                    ),
-                    const SizedBox(height: 14),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: KidButton(
-                            label: 'Запустить',
-                            icon: Icons.play_arrow_rounded,
-                            color: _accent,
-                            expand: true,
-                            onPressed: _runTask,
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: KidButton(
-                            label: 'Проверить',
-                            icon: Icons.check_rounded,
-                            color: const Color(0xFF00B894),
-                            expand: true,
-                            onPressed: _check,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    if (_feedback != null) ...[
-                      _feedbackBanner(),
-                      const SizedBox(height: 12),
-                    ],
-                    CodeConsole(
+                      onRun: _runTask,
+                      extraAction: KidButton(
+                        label: 'Проверить',
+                        icon: Icons.check_rounded,
+                        color: const Color(0xFF00B894),
+                        expand: true,
+                        onPressed: _check,
+                      ),
+                      middle: _feedback != null ? _feedbackBanner() : null,
                       result: _taskResult,
-                      placeholder: 'Нажми «Запустить» — тут появится вывод…',
+                      consolePlaceholder:
+                          'Нажми «Запустить» — тут появится вывод…',
+                      turtleSegments: lesson.drawsTurtle
+                          ? (_taskResult?.turtleSegments ?? const [])
+                          : null,
                     ),
-                    if (lesson.drawsTurtle) ...[
-                      const SizedBox(height: 12),
-                      Text(
-                        'Рисунок черепашки:',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.grey.shade700,
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      TurtleCanvas(
-                        segments: _taskResult?.turtleSegments ?? const [],
-                      ),
-                    ],
                     const SizedBox(height: 12),
                     Row(
                       children: [

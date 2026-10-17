@@ -67,6 +67,10 @@ class PythonParser {
           return _forStatement();
         case 'def':
           return _funcDef();
+        case 'try':
+          return _tryStatement();
+        case 'import':
+          return _importStatement();
       }
     }
     return _simpleStatement();
@@ -227,6 +231,31 @@ class PythonParser {
     _expectOp(':');
     final body = _block();
     return FuncDefNode(name, params, body, line);
+  }
+
+  Node _tryStatement() {
+    final line = _advance().line; // try
+    _expectOp(':');
+    final tryBody = _block();
+    if (!_check(TokType.keyword, 'except')) {
+      throw PythonError('Ожидалось «except»', line: _cur.line);
+    }
+    _advance(); // except
+    String? exceptType;
+    if (_cur.type == TokType.name) {
+      exceptType = _cur.text;
+      _advance();
+    }
+    _expectOp(':');
+    final exceptBody = _block();
+    return TryExceptNode(tryBody, exceptBody, exceptType, line);
+  }
+
+  /// Разбирает `import имя_модуля`.
+  Node _importStatement() {
+    final line = _advance().line; // import
+    final module = _expect(TokType.name, 'имя модуля').text;
+    return ImportNode(module, line);
   }
 
   // ----- выражения -----

@@ -8,6 +8,9 @@ class ProgressSnapshot {
     this.stars, {
     this.streak = 0,
     this.questsCompleted = 0,
+    this.accessoriesOwnedCount = 0,
+    this.achievementsUnlocked = 0,
+    this.stickerUnlockedCount = 0,
   });
 
   /// Звёзды по играм: `{ 'maze': [3, 2, 0, ...], 'python': [...] }`.
@@ -18,6 +21,35 @@ class ProgressSnapshot {
 
   /// Сколько всего выполнено ежедневных заданий.
   final int questsCompleted;
+
+  /// Сколько нарядов куплено в магазине (для медали «Первый наряд»).
+  final int accessoriesOwnedCount;
+
+  /// Сколько медалей уже открыто (для наклеек вроде «Пять медалей»).
+  final int achievementsUnlocked;
+
+  /// Сколько наклеек открыто (для медали «Коллекционер наклеек»).
+  final int stickerUnlockedCount;
+
+  /// Копия снимка с заменой части полей.
+  ///
+  /// Используется, чтобы досчитать производные значения (число медалей и
+  /// наклеек) уже после создания базового снимка.
+  ProgressSnapshot copyWith({
+    int? streak,
+    int? questsCompleted,
+    int? accessoriesOwnedCount,
+    int? achievementsUnlocked,
+    int? stickerUnlockedCount,
+  }) =>
+      ProgressSnapshot(
+        stars,
+        streak: streak ?? this.streak,
+        questsCompleted: questsCompleted ?? this.questsCompleted,
+        accessoriesOwnedCount: accessoriesOwnedCount ?? this.accessoriesOwnedCount,
+        achievementsUnlocked: achievementsUnlocked ?? this.achievementsUnlocked,
+        stickerUnlockedCount: stickerUnlockedCount ?? this.stickerUnlockedCount,
+      );
 
   static const List<int> _none = [];
 

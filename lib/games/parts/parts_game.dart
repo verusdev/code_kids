@@ -339,6 +339,294 @@ final List<PartsLevel> _partsLevels = [
     explanation: 'Дерево состоит из корня 🌱, ствола 🪵, веток 🌿, листьев 🍃, '
         'цветов 🌸 и плодов 🍎. Листья ловят свет — без них дерево ослабнет.',
   ),
+  const PartsLevel(
+    title: 'Часы',
+    wholeEmoji: '🕰️',
+    parts: [
+      PartItem('⚙️', 'Механизм'),
+      PartItem('🔋', 'Батарейка'),
+      PartItem('🕓', 'Циферблат'),
+      PartItem('🪟', 'Стекло'),
+    ],
+    missingIndex: 2,
+    options: [
+      PartItem('🕓', 'Циферблат'),
+      PartItem('🍎', 'Яблоко'),
+      PartItem('🚗', 'Машина'),
+    ],
+    correctIndex: 0,
+    explanation: 'В часах есть механизм ⚙️, батарейка 🔋, циферблат 🕓 и '
+        'стекло 🪟. На циферблате нарисованы цифры — без него время не увидеть.',
+  ),
+  const PartsLevel(
+    title: 'Радио',
+    wholeEmoji: '📻',
+    parts: [
+      PartItem('🔋', 'Батарейка'),
+      PartItem('🔊', 'Динамик'),
+      PartItem('📡', 'Антенна'),
+      PartItem('🔘', 'Кнопка'),
+    ],
+    missingIndex: 1,
+    options: [
+      PartItem('🔊', 'Динамик'),
+      PartItem('🎸', 'Гитара'),
+      PartItem('🍞', 'Хлеб'),
+    ],
+    correctIndex: 0,
+    explanation: 'Из радио слышны передачи — для звука нужен динамик 🔊. '
+        'Батарейка 🔋 даёт энергию, антенна 📡 ловит сигнал, кнопка 🔘 включает.',
+  ),
+  const PartsLevel(
+    title: 'Солнечная система',
+    wholeEmoji: '🌍',
+    parts: [
+      PartItem('☀️', 'Солнце'),
+      PartItem('🪐', 'Планеты'),
+      PartItem('☄️', 'Кометы'),
+      PartItem('🛰️', 'Спутники'),
+    ],
+    missingIndex: 1,
+    options: [
+      PartItem('🪐', 'Планеты'),
+      PartItem('🌊', 'Волны'),
+      PartItem('🏖️', 'Пляж'),
+    ],
+    correctIndex: 0,
+    explanation: 'Вокруг Солнца ☀️ кружатся планеты 🪐, а ещё там летают '
+        'кометы ☄️ и работают спутники 🛰️. Волны и пляж бывают только на планетах!',
+  ),
+  const PartsLevel(
+    title: 'Суп',
+    wholeEmoji: '🍲',
+    parts: [
+      PartItem('🥔', 'Картошка'),
+      PartItem('🥕', 'Морковь'),
+      PartItem('🧅', 'Лук'),
+      PartItem('🍖', 'Мясо'),
+    ],
+    missingIndex: 1,
+    options: [
+      PartItem('🥕', 'Морковь'),
+      PartItem('🍩', 'Пончик'),
+      PartItem('🧁', 'Торт'),
+    ],
+    correctIndex: 0,
+    explanation: 'В суп кладут картошку 🥔, морковь 🥕, лук 🧅 и мясо 🍖. '
+        'Пончик и торт в суп не попадут — это десерты!',
+  ),
+  const PartsLevel(
+    title: 'Печенье',
+    wholeEmoji: '🍪',
+    parts: [
+      PartItem('🌾', 'Мука'),
+      PartItem('🥚', 'Яйцо'),
+      PartItem('🧈', 'Масло'),
+      PartItem('🍬', 'Сахар'),
+    ],
+    missingIndex: 3,
+    options: [
+      PartItem('🍬', 'Сахар'),
+      PartItem('🪨', 'Камень'),
+      PartItem('🚲', 'Велосипед'),
+    ],
+    correctIndex: 0,
+    explanation: 'Тесто на печенье замешивают из муки 🌾, яиц 🥚, масла 🧈 '
+        'и сахара 🍬. Камень и велосипед в тесто не положат.',
+  ),
+  const PartsLevel(
+    title: 'Мост',
+    wholeEmoji: '🌉',
+    parts: [
+      PartItem('🪨', 'Опоры'),
+      PartItem('🪵', 'Настил'),
+      PartItem('🛡️', 'Перила'),
+      PartItem('💡', 'Фонари'),
+    ],
+    missingIndex: 2,
+    options: [
+      PartItem('🛡️', 'Перила'),
+      PartItem('🧦', 'Носки'),
+      PartItem('🍰', 'Торт'),
+    ],
+    correctIndex: 0,
+    explanation: 'Мост держится на опорах 🪨, по нему идут по настилу 🪵, '
+        'а перила 🛡️ защищают, чтобы не упасть. Носки и торт мосту не нужны.',
+  ),
+  const PartsLevel(
+    title: 'Библиотека',
+    wholeEmoji: '🏛️',
+    parts: [
+      PartItem('📚', 'Книги'),
+      PartItem('🪑', 'Столы'),
+      PartItem('👩‍💼', 'Библиотекарь'),
+      PartItem('💻', 'Компьютер'),
+    ],
+    missingIndex: 1,
+    options: [
+      PartItem('🪑', 'Столы'),
+      PartItem('🍕', 'Пицца'),
+      PartItem('🛵', 'Скутер'),
+    ],
+    correctIndex: 0,
+    explanation: 'В библиотеке хранят книги 📚, читают за столами 🪑, '
+        'а библиотекарь 👩‍💼 выдаёт книги. Пиццу и скутер там не найдёшь.',
+  ),
+  const PartsLevel(
+    title: 'Телевизор',
+    wholeEmoji: '📺',
+    parts: [
+      PartItem('🔌', 'Питание'),
+      PartItem('🔊', 'Динамик'),
+      PartItem('🔲', 'Экран'),
+      PartItem('📡', 'Антенна'),
+    ],
+    missingIndex: 0,
+    options: [
+      PartItem('🔌', 'Питание'),
+      PartItem('🎈', 'Шарик'),
+      PartItem('🥕', 'Морковь'),
+    ],
+    correctIndex: 0,
+    explanation: 'Чтобы телевизор включился, нужна электроэнергия 🔌. '
+        'На экране 🔲 идут картинки, динамик 🔊 подаёт звук, антенна 📡 ловит каналы.',
+  ),
+  const PartsLevel(
+    title: 'Вулкан',
+    wholeEmoji: '🌋',
+    parts: [
+      PartItem('🔥', 'Лава'),
+      PartItem('💨', 'Пепел'),
+      PartItem('🏔️', 'Кратер'),
+      PartItem('🪨', 'Камни'),
+    ],
+    missingIndex: 0,
+    options: [
+      PartItem('🔥', 'Лава'),
+      PartItem('🍦', 'Мороженое'),
+      PartItem('🛷', 'Санки'),
+    ],
+    correctIndex: 0,
+    explanation: 'Из кратера 🏔️ вылетает пепел 💨 и вытекает раскалённая лава 🔥, '
+        'а из остывшей лавы получаются камни 🪨. Мороженое в вулкане растает!',
+  ),
+  const PartsLevel(
+    title: 'Огород',
+    wholeEmoji: '🥕',
+    parts: [
+      PartItem('☀️', 'Солнце'),
+      PartItem('💧', 'Вода'),
+      PartItem('🪱', 'Червячки'),
+      PartItem('🧑‍🌾', 'Огородник'),
+    ],
+    missingIndex: 2,
+    options: [
+      PartItem('🪱', 'Червячки'),
+      PartItem('📖', 'Книга'),
+      PartItem('🎸', 'Гитара'),
+    ],
+    correctIndex: 0,
+    explanation: 'Морковке нужно солнце ☀️, вода 💧, забота огородника 🧑‍🌾 '
+        'и червячки 🪱: они рыхлят землю, чтобы корням было легче расти.',
+  ),
+  const PartsLevel(
+    title: 'Пианино',
+    wholeEmoji: '🎹',
+    parts: [
+      PartItem('⚪', 'Клавиши'),
+      PartItem('🧵', 'Струны'),
+      PartItem('🔨', 'Молоточки'),
+      PartItem('🪵', 'Корпус'),
+    ],
+    missingIndex: 1,
+    options: [
+      PartItem('🧵', 'Струны'),
+      PartItem('🚪', 'Дверь'),
+      PartItem('🧁', 'Торт'),
+    ],
+    correctIndex: 0,
+    explanation: 'Когда нажимаешь клавиши ⚪, молоточки 🔨 ударяют по струнам 🧵, '
+        'и звук разносится внутри корпуса 🪵. Дверь и торт тут ни при чём.',
+  ),
+  const PartsLevel(
+    title: 'Космонавт',
+    wholeEmoji: '🧑‍🚀',
+    parts: [
+      PartItem('🦺', 'Скафандр'),
+      PartItem('🥽', 'Шлем'),
+      PartItem('📡', 'Радио'),
+      PartItem('🎒', 'Воздух и вода'),
+    ],
+    missingIndex: 0,
+    options: [
+      PartItem('🦺', 'Скафандр'),
+      PartItem('🛴', 'Самокат'),
+      PartItem('🍪', 'Печенье'),
+    ],
+    correctIndex: 0,
+    explanation: 'В космосе холодно и нет воздуха, поэтому космонавту нужен '
+        'скафандр 🦺. Шлем 🥽 защищает голову, радио 📡 связывает с Землёй, '
+        'а в рюкзачке 🎒 воздух и вода.',
+  ),
+  const PartsLevel(
+    title: 'Пожарная команда',
+    wholeEmoji: '🚒',
+    parts: [
+      PartItem('🚒', 'Пожарная машина'),
+      PartItem('🚿', 'Струя воды'),
+      PartItem('🧯', 'Огнетушитель'),
+      PartItem('🧑‍🚒', 'Пожарный'),
+    ],
+    missingIndex: 2,
+    options: [
+      PartItem('🧯', 'Огнетушитель'),
+      PartItem('🎂', 'Торт'),
+      PartItem('🛼', 'Ролики'),
+    ],
+    correctIndex: 0,
+    explanation: 'Пожарные тушат огонь водой: струёй из шланга 🚿 на машине 🚒 '
+        'и огнетушителем 🧯. Торт и ролики на пожаре не помогут.',
+  ),
+  const PartsLevel(
+    title: 'Аэропорт',
+    wholeEmoji: '✈️',
+    parts: [
+      PartItem('🛫', 'Самолёты'),
+      PartItem('🛣️', 'Взлётная полоса'),
+      PartItem('🗼', 'Диспетчерская'),
+      PartItem('🎫', 'Стойка регистрации'),
+    ],
+    missingIndex: 1,
+    options: [
+      PartItem('🛣️', 'Взлётная полоса'),
+      PartItem('🥗', 'Салат'),
+      PartItem('🚲', 'Велосипед'),
+    ],
+    correctIndex: 0,
+    explanation: 'Самолёты ✈️ взлетают и садятся на взлётную полосу 🛣️. '
+        'Диспетчерская 🗼 следит за небом, а на стойке 🎫 выдают билеты. '
+        'Салат и велосипед в аэропорте не летают.',
+  ),
+  const PartsLevel(
+    title: 'Школа',
+    wholeEmoji: '🏫',
+    parts: [
+      PartItem('👩‍🏫', 'Учитель'),
+      PartItem('📚', 'Учебники'),
+      PartItem('🧒', 'Ученики'),
+      PartItem('🔔', 'Звонок'),
+    ],
+    missingIndex: 3,
+    options: [
+      PartItem('🔔', 'Звонок'),
+      PartItem('🎪', 'Шатёр'),
+      PartItem('🛸', 'Тарелка'),
+    ],
+    correctIndex: 0,
+    explanation: 'В школе учитель 👩‍🏫 ведёт уроки, ученики 🧒 слушают и '
+        'пишут в учебниках 📚, а звонок 🔔 сообщает, что урок окончен. '
+        'Шатёр и тарелка в школу не прилетали.',
+  ),
 ];
 
 /// Уровни игры (открыты для автотестов).
@@ -371,7 +659,7 @@ class _PartsGameState extends State<PartsGame> {
     title: 'Части и целое',
     subtitle: '',
     emoji: '🧩',
-    levelCount: 15,
+    levelCount: 30,
   );
 
   @override

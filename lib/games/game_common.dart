@@ -20,12 +20,16 @@ AppBar gameAppBar(GameInfo game, int levelIndex) {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text('🏆  Испытание',
-                  style: TextStyle(fontSize: 17, fontWeight: FontWeight.w900)),
+              const Text(
+                '🏆  Испытание',
+                style: TextStyle(fontSize: 17, fontWeight: FontWeight.w900),
+              ),
               Text(
                 game.title,
                 style: const TextStyle(
-                    fontSize: 12, fontWeight: FontWeight.w600),
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ],
           )
@@ -88,7 +92,6 @@ class _ChallengeClock extends StatelessWidget {
   }
 }
 
-
 /// Оверлей победы: конфетти, звёзды и кнопки продолжения.
 class WinOverlay extends StatefulWidget {
   const WinOverlay({
@@ -146,10 +149,7 @@ class _WinOverlayState extends State<WinOverlay> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(
-                        game.emoji,
-                        style: const TextStyle(fontSize: 56),
-                      ),
+                      Text(game.emoji, style: const TextStyle(fontSize: 56)),
                       const SizedBox(height: 8),
                       Text(
                         _praise,
@@ -164,7 +164,8 @@ class _WinOverlayState extends State<WinOverlay> {
                       if (inChallenge) ...[
                         const SizedBox(height: 20),
                         KidButton(
-                          label: ChallengeSession.current < ChallengeSession.total
+                          label:
+                              ChallengeSession.current < ChallengeSession.total
                               ? 'Дальше'
                               : 'Завершить',
                           icon: Icons.arrow_forward_rounded,
@@ -206,8 +207,9 @@ class _WinOverlayState extends State<WinOverlay> {
                           icon: Icons.home_rounded,
                           color: AppTheme.purple,
                           expand: true,
-                          onPressed: () => Navigator.of(context)
-                              .popUntil((route) => route.isFirst),
+                          onPressed: () =>
+                              Navigator.of(context)
+                                  .popUntil((route) => route.isFirst),
                         ),
                       ],
                     ],
@@ -223,17 +225,41 @@ class _WinOverlayState extends State<WinOverlay> {
 }
 
 /// Строка подсказки под игровым полем.
-class HintBar extends StatelessWidget {
-  const HintBar({super.key, required this.text, this.color});
+class HintBar extends StatefulWidget {
+  const HintBar({
+    super.key,
+    required this.text,
+    this.color,
+    this.autoRead = true,
+  });
 
   final String text;
   final Color? color;
+
+  /// Читать текст голосом при появлении (озвучка задания на уровне).
+  final bool autoRead;
+
+  @override
+  State<HintBar> createState() => _HintBarState();
+}
+
+class _HintBarState extends State<HintBar> {
+  @override
+  void initState() {
+    super.initState();
+    if (widget.autoRead) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        SpeechService.instance.speak(widget.text);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     // Во время «Испытания» подсказки скрыты — нельзя подглядывать.
     if (ChallengeSession.active) return const SizedBox.shrink();
-    final accent = color ?? AppTheme.yellow;
+    final accent = widget.color ?? AppTheme.yellow;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -247,14 +273,11 @@ class HintBar extends StatelessWidget {
           const SizedBox(width: 8),
           Expanded(
             child: Text(
-              text,
-              style: const TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-              ),
+              widget.text,
+              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
             ),
           ),
-          TaskSpeechButton(text: text, color: AppTheme.ink),
+          TaskSpeechButton(text: widget.text, color: AppTheme.ink),
         ],
       ),
     );

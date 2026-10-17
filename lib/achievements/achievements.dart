@@ -1,7 +1,9 @@
 import '../models/achievement.dart';
 import '../models/game_models.dart';
 import '../services/daily_service.dart';
+import '../services/mascot_service.dart';
 import '../services/progress_service.dart';
+import '../stickers/stickers.dart';
 
 /// Все игровые разделы (включая Python-курс) — для достижения «Везде побывал».
 final List<String> kAllGameIds = [
@@ -124,11 +126,79 @@ final List<Achievement> kAchievements = [
     emoji: '🗓️',
     test: (s) => s.streak >= 7,
   ),
+  // --- Фаза «Маскот и коллекция» ---
+  Achievement(
+    id: 'first_outfit',
+    title: 'Первый наряд',
+    description: 'Купи в магазине первый наряд для кота Байта',
+    emoji: '👕',
+    test: (s) => s.accessoriesOwnedCount >= 1,
+  ),
+  Achievement(
+    id: 'sticker_collector',
+    title: 'Коллекционер наклеек',
+    description: 'Открой 10 наклеек в альбоме',
+    emoji: '📖',
+    test: (s) => s.stickerUnlockedCount >= 10,
+  ),
+  // --- Контент-3: музыка, логика, робототехника ---
+  Achievement(
+    id: 'musician',
+    title: 'Юный музыкант',
+    description: 'Пройди 5 уровней «Собери мелодию»',
+    emoji: '🎵',
+    test: (s) => s.passed('melody') >= 5,
+  ),
+  Achievement(
+    id: 'memory_master',
+    title: 'Острый глаз',
+    description: 'Пройди 5 уровней «Найди пару»',
+    emoji: '🧠',
+    test: (s) => s.passed('memory') >= 5,
+  ),
+  Achievement(
+    id: 'tower_builder',
+    title: 'Строитель башен',
+    description: 'Пройди 5 уровней «Ханойская башня»',
+    emoji: '🗼',
+    test: (s) => s.passed('hanoi') >= 5,
+  ),
+  Achievement(
+    id: 'builder',
+    title: 'Инженер-конструктор',
+    description: 'Пройди 5 уровней «Собери робота»',
+    emoji: '🛠️',
+    test: (s) => s.passed('robot') >= 5,
+  ),
+  Achievement(
+    id: 'graduate',
+    title: 'Выпускник курса',
+    description: 'Пройди все уроки Python-курса',
+    emoji: '🎓',
+    test: (s) => s.passed('python') >= 30,
+  ),
 ];
 
 /// Актуальный снимок прогресса ребёнка.
-ProgressSnapshot currentSnapshot() => ProgressSnapshot(
-      ProgressService.instance.snapshot,
-      streak: DailyService.instance.streak,
-      questsCompleted: DailyService.instance.questsCompleted,
-    );
+///
+/// Помимо звёзд и серии дней, снимок несёт производные значения:
+/// число купленных нарядов, открытых медалей и наклеек. Порядок важен:
+/// число медалей считается на «базовом» снимке (без наклеек), а затем уже
+/// по нему — число наклеек, поэтому циклической зависимости нет.
+ProgressSnapshot currentSnapshot() {
+  var snapshot = ProgressSnapshot(
+    ProgressService.instance.snapshot,
+    streak: DailyService.instance.streak,
+    questsCompleted: DailyService.instance.questsCompleted,
+    accessoriesOwnedCount: MascotService.instance.ownedCount,
+  );
+  snapshot = snapshot.copyWith(
+    achievementsUnlocked: kAchievements
+        .where((a) => a.isUnlocked(snapshot))
+        .length,
+  );
+  snapshot = snapshot.copyWith(
+    stickerUnlockedCount: unlockedStickerCount(snapshot),
+  );
+  return snapshot;
+}

@@ -22,6 +22,7 @@ class PythonLexer {
   static const Set<String> keywords = {
     'and', 'or', 'not', 'if', 'elif', 'else', 'while', 'for', 'in', 'def',
     'return', 'True', 'False', 'None', 'break', 'continue', 'pass',
+    'import', 'try', 'except',
   };
 
   static const List<String> _twoCharOps = [

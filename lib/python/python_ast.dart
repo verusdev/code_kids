@@ -78,6 +78,25 @@ class PassNode extends Node {
   PassNode(super.line);
 }
 
+// ----- Новые операторы -----
+
+/// Импорт модуля: `import random`
+class ImportNode extends Node {
+  ImportNode(this.module, int line) : super(line);
+
+  final String module;
+}
+
+/// Обработка исключений: `try:` ... `except:` ...
+class TryExceptNode extends Node {
+  TryExceptNode(this.tryBody, this.exceptBody, this.exceptType, int line)
+      : super(line);
+
+  final List<Node> tryBody;
+  final List<Node> exceptBody;
+  final String? exceptType; // например 'NameError', 'ValueError' и т.д.
+}
+
 // ----- Выражения (expression) -----
 
 class NumNode extends Node {

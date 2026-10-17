@@ -15,6 +15,7 @@ class GridBoard extends StatelessWidget {
     required this.rows,
     required this.walls,
     this.sprites = const [],
+    this.props = const [],
     this.showLabels = false,
   });
 
@@ -24,6 +25,11 @@ class GridBoard extends StatelessWidget {
   /// Множество стен: индекс клетки = y * cols + x.
   final Set<int> walls;
   final List<BoardSprite> sprites;
+
+  /// Необязательные предметы на клетках (ключи, двери, телепорты и т.п.).
+  ///
+  /// По умолчанию список пуст — старые игры работают без изменений.
+  final List<BoardProp> props;
   final bool showLabels;
 
   bool isWall(int x, int y) => walls.contains(y * cols + x);
@@ -87,6 +93,27 @@ class GridBoard extends StatelessWidget {
                             : null,
                       ),
                     ),
+                // Предметы на клетках (ключи, двери, телепорты и т.п.).
+                // Рисуются под спрайтами и не перехватывают нажатия.
+                for (final p in props)
+                  Positioned(
+                    left: p.x * cell,
+                    top: p.y * cell,
+                    width: cell,
+                    height: cell,
+                    child: IgnorePointer(
+                      child: Padding(
+                        padding: EdgeInsets.all(cell * 0.10),
+                        child: Opacity(
+                          opacity: p.opacity.clamp(0.0, 1.0),
+                          child: FittedBox(
+                            fit: BoxFit.contain,
+                            child: p.child,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
                 // Спрайты (робот, звёзды, флажок).
                 for (final s in sprites)
                   AnimatedPositioned(
@@ -121,6 +148,28 @@ class BoardSprite {
   final int x;
   final int y;
   final Widget child;
+}
+
+/// Статичный предмет на клетке поля: ключ, дверь, телепорт и т.п.
+///
+/// В отличие от [BoardSprite] не анимируется и рисуется под спрайтами.
+/// Идентификатор нужен только для стабильной отрисовки списка.
+class BoardProp {
+  const BoardProp({
+    required this.id,
+    required this.x,
+    required this.y,
+    required this.child,
+    this.opacity = 1.0,
+  });
+
+  final Object id;
+  final int x;
+  final int y;
+  final Widget child;
+
+  /// Прозрачность (например, для «погасшей» уже собранной вещи).
+  final double opacity;
 }
 
 /// Помощник для вычисления индексов клеток.

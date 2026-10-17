@@ -140,9 +140,18 @@ void main() {
     testWidgets('испытание включает самый трудный уровень каждой игры',
         (tester) async {
       final tasks = ChallengeScreen.tasks;
+      // В испытание входит ровно по одной (самой сложной) игре из реестра.
       expect(tasks.length, kGames.length + kSystemGames.length);
+      expect(
+        tasks.map((g) => g.id).toList(),
+        [...kGames, ...kSystemGames].map((g) => g.id).toList(),
+      );
       for (final game in tasks) {
-        expect(game.levelCount, 15);
+        // Номер «самого трудного» уровня — levelCount - 1 (последний),
+        // поэтому он должен существовать у любой игры.
+        final real = gameById(game.id);
+        expect(game.levelCount, real.levelCount);
+        expect(game.levelCount - 1, greaterThanOrEqualTo(0));
       }
     });
   });

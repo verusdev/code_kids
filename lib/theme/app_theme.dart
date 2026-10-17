@@ -25,6 +25,14 @@ class AppTheme {
     'blocks': Color(0xFF8E44AD),
     'pixel': Color(0xFFE91E63),
     'python': Color(0xFF3776AB),
+    // Новые игры: отладка и шифры.
+    'bug': Color(0xFF2DBE60),
+    'code': Color(0xFF3742FA),
+    // Музыка и логика (Контент-3)
+    'melody': Color(0xFF7D5FFF),
+    'memory': Color(0xFF7E57C2),
+    'hanoi': Color(0xFF42A5F5),
+    'robot': Color(0xFFFFB300),
     // Системное мышление.
     'parts': Color(0xFF00A8A8),
     'causes': Color(0xFFB84CE3),

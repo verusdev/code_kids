@@ -1,6 +1,7 @@
 import 'package:code_kids/blocks/block_model.dart';
 import 'package:code_kids/games/collect_stars/collect_stars_game.dart';
 import 'package:code_kids/games/blocks/blocks_game.dart';
+import 'package:code_kids/games/bug/bug_game.dart';
 import 'package:code_kids/games/causes/causes_game.dart';
 import 'package:code_kids/games/pixel/pixel_game.dart';
 import 'package:code_kids/games/odd_one_out/odd_one_out_game.dart';
@@ -8,6 +9,7 @@ import 'package:code_kids/games/parts/parts_game.dart';
 import 'package:code_kids/games/pattern/pattern_game.dart';
 import 'package:code_kids/games/robot_maze/robot_maze_game.dart';
 import 'package:code_kids/games/rules/rules_game.dart';
+import 'package:code_kids/games/secret_code/secret_code_game.dart';
 import 'package:code_kids/games/steps_order/steps_order_game.dart';
 import 'package:code_kids/models/game_models.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -87,6 +89,58 @@ bool starsSolvable(StarsLevel level) {
   return false;
 }
 
+/// Программа-решение для уровня пиксель-арта, построенная «змейкой»:
+/// целевые клетки обходятся по строкам (нечётные строки — справа налево),
+/// кисточка меняет цвет при необходимости и красит только нужные клетки.
+///
+/// Алгоритм повторяет `pixelSolution` из `tool/blocks_pixel_ext_check.dart`
+/// (файл только для чтения), но выдаёт готовые блоки.
+List<BlockNode> pixelSnakeSolution(PixelLevel level) {
+  final cells = level.target.toList()
+    ..sort((a, b) {
+      final ay = a ~/ level.cols;
+      final by = b ~/ level.cols;
+      if (ay != by) return ay.compareTo(by);
+      final ax = a % level.cols;
+      final bx = b % level.cols;
+      return ay.isEven ? ax.compareTo(bx) : bx.compareTo(ax);
+    });
+
+  final nodes = <BlockNode>[];
+  var x = 0;
+  var y = 0;
+  var brush = 0;
+  for (final cell in cells) {
+    final tx = cell % level.cols;
+    final ty = cell ~/ level.cols;
+    while (x < tx) {
+      nodes.add(CommandBlock(kRight));
+      x++;
+    }
+    while (x > tx) {
+      nodes.add(CommandBlock(kLeft));
+      x--;
+    }
+    while (y < ty) {
+      nodes.add(CommandBlock(kDown));
+      y++;
+    }
+    while (y > ty) {
+      nodes.add(CommandBlock(kUp));
+      y--;
+    }
+    final want = level.colorTarget?[cell] ?? 0;
+    if (want != brush) {
+      expect(want, inInclusiveRange(1, 4),
+          reason: 'в клетке $cell недопустимый цвет $want');
+      nodes.add(CommandBlock(kPixelColorBlocks[want - 1]));
+      brush = want;
+    }
+    nodes.add(CommandBlock(kPaint));
+  }
+  return nodes;
+}
+
 void main() {
   group('Количество уровней', () {
     test('у каждой игры минимум $kMinLevels уровней', () {
@@ -100,6 +154,8 @@ void main() {
       expect(partsLevels.length, greaterThanOrEqualTo(kMinLevels));
       expect(causesLevels.length, greaterThanOrEqualTo(kMinLevels));
       expect(rulesLevels.length, greaterThanOrEqualTo(kMinLevels));
+      expect(bugLevels.length, greaterThanOrEqualTo(kMinLevels));
+      expect(codeLevels.length, greaterThanOrEqualTo(kMinLevels));
     });
 
     test('реестр kGames совпадает с числом уровней', () {
@@ -110,6 +166,8 @@ void main() {
       expect(gameById('steps').levelCount, stepsLevels.length);
       expect(gameById('blocks').levelCount, blockLevels.length);
       expect(gameById('pixel').levelCount, pixelLevels.length);
+      expect(gameById('bug').levelCount, bugLevels.length);
+      expect(gameById('code').levelCount, codeLevels.length);
     });
 
     test('реестр kSystemGames совпадает с числом уровней', () {
@@ -524,6 +582,11 @@ void main() {
           ),
         ],
       ];
+      // Уровни 16–45 проходятся «змейкой», собранной автоматически
+      // (см. pixelSnakeSolution — порт логики из tool/blocks_pixel_ext_check.dart).
+      for (var i = solutions.length; i < pixelLevels.length; i++) {
+        solutions.add(pixelSnakeSolution(pixelLevels[i]));
+      }
       expect(solutions.length, pixelLevels.length);
       for (var i = 0; i < pixelLevels.length; i++) {
         final level = pixelLevels[i];
@@ -535,6 +598,14 @@ void main() {
         );
         expect(sim.hitLimit, isFalse,
             reason: 'уровень ${i + 1}: программа слишком длинная');
+        if (level.colorTarget != null) {
+          expect(
+            sim.finalColors,
+            level.colorTarget,
+            reason: 'уровень ${i + 1}: цвета закрашенных клеток '
+                'не совпадают с цветной целью',
+          );
+        }
       }
     });
   });
@@ -601,23 +672,45 @@ void main() {
   });
 
   group('Системное мышление: части и целое', () {
-    test('пропавшая часть совпадает с верным ответом', () {
+    test('для всех уровней пропавшая часть совпадает с верным ответом', () {
+      expect(partsLevels.length, 30,
+          reason: 'ожидалось 30 уровней игры «Части и целое»');
       for (var i = 0; i < partsLevels.length; i++) {
         final level = partsLevels[i];
+        final where = 'уровень ${i + 1} «${level.title}»';
         expect(level.title, isNotEmpty, reason: 'уровень ${i + 1}');
-        expect(level.parts.length, greaterThanOrEqualTo(3),
-            reason: 'уровень ${i + 1}');
+        expect(level.parts.length, greaterThanOrEqualTo(3), reason: where);
         expect(level.missingIndex, inInclusiveRange(0, level.parts.length - 1),
-            reason: 'уровень ${i + 1}: неверный missingIndex');
-        expect(level.options.length, greaterThanOrEqualTo(2),
-            reason: 'уровень ${i + 1}');
+            reason: '$where: неверный missingIndex');
+        expect(level.options.length, greaterThanOrEqualTo(2), reason: where);
         expect(level.correctIndex, inInclusiveRange(0, level.options.length - 1),
-            reason: 'уровень ${i + 1}: неверный correctIndex');
+            reason: '$where: неверный correctIndex');
+        expect(level.explanation, isNotEmpty, reason: where);
+
+        // Инвариант: верный вариант — это ровно пропавшая часть
+        // (совпадают и эмодзи, и подпись). Никаких исключений: все 30 уровней.
         final missing = level.parts[level.missingIndex];
         final answer = level.options[level.correctIndex];
+        expect(answer.emoji, missing.emoji,
+            reason: '$where: эмодзи верного ответа не совпадает '
+                'с пропавшей частью');
         expect(answer.label, missing.label,
-            reason: 'уровень ${i + 1}: верный ответ не та часть, что пропала');
-        expect(level.explanation, isNotEmpty, reason: 'уровень ${i + 1}');
+            reason: '$where: верный ответ «${answer.label}» не совпадает '
+                'с пропавшей частью «${missing.label}»');
+
+        // Варианты должны быть различимы, иначе правильный ответ неоднозначен.
+        final variants =
+            level.options.map((o) => '${o.emoji}|${o.label}').toList();
+        expect(variants.toSet().length, variants.length,
+            reason: '$where: варианты не уникальны: $variants');
+
+        // Пропавшая часть обязана присутствовать среди вариантов.
+        expect(
+          level.options
+              .any((o) => o.emoji == missing.emoji && o.label == missing.label),
+          isTrue,
+          reason: '$where: пропавшей части нет среди вариантов',
+        );
       }
     });
   });

@@ -4,6 +4,7 @@ import '../models/game_models.dart';
 import '../services/daily_service.dart';
 import '../services/progress_service.dart';
 import 'blocks/blocks_game.dart';
+import 'bug/bug_game.dart';
 import 'causes/causes_game.dart';
 import 'collect_stars/collect_stars_game.dart';
 import 'odd_one_out/odd_one_out_game.dart';
@@ -12,7 +13,12 @@ import 'pattern/pattern_game.dart';
 import 'pixel/pixel_game.dart';
 import 'robot_maze/robot_maze_game.dart';
 import 'rules/rules_game.dart';
+import 'secret_code/secret_code_game.dart';
 import 'steps_order/steps_order_game.dart';
+import 'melody/melody_game.dart';
+import 'memory/memory_game.dart';
+import 'hanoi/hanoi_game.dart';
+import 'robot_build/robot_game.dart';
 
 /// Возвращает игровой экран для нужной игры и уровня.
 ///
@@ -43,6 +49,18 @@ Widget buildGameScreen({
       return CausesGame(levelIndex: levelIndex, onFinished: onFinished);
     case 'rules':
       return RulesGame(levelIndex: levelIndex, onFinished: onFinished);
+    case 'bug':
+      return BugGame(levelIndex: levelIndex, onFinished: onFinished);
+    case 'code':
+      return SecretCodeGame(levelIndex: levelIndex, onFinished: onFinished);
+    case 'melody':
+      return MelodyGame(levelIndex: levelIndex, onFinished: onFinished);
+    case 'memory':
+      return MemoryGame(levelIndex: levelIndex, onFinished: onFinished);
+    case 'hanoi':
+      return HanoiGame(levelIndex: levelIndex, onFinished: onFinished);
+    case 'robot':
+      return RobotGame(levelIndex: levelIndex, onFinished: onFinished);
     default:
       return Scaffold(
         appBar: AppBar(title: const Text('Игра не найдена')),

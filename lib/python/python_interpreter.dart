@@ -3,6 +3,31 @@ import 'dart:math' as math;
 import 'python_ast.dart';
 import 'python_error.dart';
 
+/// Ошибки с типом — чтобы работало `except NameError:` и т.п.
+/// Все расширяют PythonError, поэтому текст ошибки для ребёнка прежний.
+class _NameErr extends PythonError {
+  _NameErr(super.message, {super.line});
+}
+
+class _ValueErr extends PythonError {
+  _ValueErr(super.message, {super.line});
+}
+
+class _ZeroDivErr extends PythonError {
+  _ZeroDivErr(super.message, {super.line});
+}
+
+class _TypeErr extends PythonError {
+  _TypeErr(super.message, {super.line});
+}
+
+/// Ошибка про лимиты безопасности (шаги, рекурсия, вывод).
+/// НЕ ловится конструкцией try/except — иначе цикл с ошибкой
+/// мог бы крутиться вечно и обходить лимиты.
+class _LimitErr extends PythonError {
+  _LimitErr(super.message, {super.line});
+}
+
 /// Пользовательская функция, объявленная через `def`.
 class PyFunction {
   PyFunction(this.name, this.params, this.body, this.closure);
@@ -75,6 +100,54 @@ class PyTurtle {
   bool penDown = true;
 }
 
+/// Встроенный модуль `import random`: randint, choice, random.
+class PyRandomModule {
+  final math.Random _rnd = math.Random();
+
+  /// Вызов функции модуля: random.randint(1, 10) и т.п.
+  Object? call(String name, List<Object?> args, int line) {
+    switch (name) {
+      case 'randint':
+        if (args.length != 2) {
+          throw PythonError('random.randint() принимает два числа', line: line);
+        }
+        final a = _asIntArg(args[0], 'random.randint', line);
+        final b = _asIntArg(args[1], 'random.randint', line);
+        if (a > b) {
+          throw _ValueErr(
+            'random.randint: первое число ($a) не может быть больше второго ($b)',
+            line: line,
+          );
+        }
+        return _rnd.nextInt(b - a + 1) + a;
+      case 'choice':
+        if (args.length != 1) {
+          throw PythonError('random.choice() принимает один список', line: line);
+        }
+        final list = args[0];
+        if (list is! List) {
+          throw _TypeErr('random.choice() ждёт список', line: line);
+        }
+        if (list.isEmpty) {
+          throw _ValueErr('random.choice(): список пуст', line: line);
+        }
+        return list[_rnd.nextInt(list.length)];
+      case 'random':
+        if (args.isNotEmpty) {
+          throw PythonError('random.random() не принимает значений', line: line);
+        }
+        return _rnd.nextDouble();
+    }
+    throw PythonError('У random нет функции «$name»', line: line);
+  }
+
+  int _asIntArg(Object? v, String where, int line) {
+    if (v is int) return v;
+    if (v is double) return v.truncate();
+    throw _TypeErr('$where ждёт целые числа, а получено ${pyType(v)}', line: line);
+  }
+}
+
 // Внутренние сигналы управления потоком.
 class _Break {
   const _Break();
@@ -117,7 +190,7 @@ class PythonInterpreter {
   void _tick(int line) {
     _steps++;
     if (_steps > maxSteps) {
-      throw PythonError(
+      throw _LimitErr(
         'Программа слишком долго работает — возможно, бесконечный цикл. '
         'Проверь условие или счётчик.',
         line: line,
@@ -211,6 +284,28 @@ class PythonInterpreter {
     if (node is PassNode) {
       return;
     }
+    if (node is TryExceptNode) {
+      try {
+        _execBlock(node.tryBody, env);
+      } on _LimitErr {
+        // Лимиты безопасности не обходятся через except.
+        rethrow;
+      } on PythonError catch (e) {
+        if (!_matchesExcept(e, node.exceptType)) rethrow;
+        _execBlock(node.exceptBody, env);
+      }
+      return;
+    }
+    if (node is ImportNode) {
+      if (node.module != 'random') {
+        throw PythonError(
+          'Пока поддерживается только import random',
+          line: node.line,
+        );
+      }
+      env.define('random', PyRandomModule());
+      return;
+    }
     throw PythonError('Неподдерживаемая конструкция', line: node.line);
   }
 
@@ -218,6 +313,23 @@ class PythonInterpreter {
     for (final stmt in body) {
       _exec(stmt, env);
     }
+  }
+
+  /// Совпадает ли ошибка с типом в `except ИмяОшибки:`.
+  /// `exceptType == null` — голый `except:` (ловит любую ошибку).
+  bool _matchesExcept(PythonError e, String? exceptType) {
+    if (exceptType == null) return true;
+    switch (exceptType) {
+      case 'NameError':
+        return e is _NameErr;
+      case 'ValueError':
+        return e is _ValueErr;
+      case 'ZeroDivisionError':
+        return e is _ZeroDivErr;
+      case 'TypeError':
+        return e is _TypeErr;
+    }
+    return true;
   }
 
   List<Object?> _asIterable(Object? value, int line) {
@@ -240,7 +352,7 @@ class PythonInterpreter {
     if (node is NameNode) {
       final v = env.get(node.name);
       if (identical(v, PyEnv._missing)) {
-        throw PythonError(
+        throw _NameErr(
           'Имя «${node.name}» не найдено. Проверь, что переменная создана.',
           line: node.line,
         );
@@ -323,6 +435,10 @@ class PythonInterpreter {
     if (callee is PyBuiltin) {
       return callee.fn(args);
     }
+    if (callee is PyRandomModule) {
+      // Просто random() — то же самое, что random.random()
+      return callee.call('random', args, line);
+    }
     if (callee is PyFunction) {
       if (args.length != callee.params.length) {
         throw PythonError(
@@ -334,7 +450,7 @@ class PythonInterpreter {
       _depth++;
       if (_depth > maxDepth) {
         _depth--;
-        throw PythonError(
+        throw _LimitErr(
           'Слишком много вложенных вызовов. Возможно, функция вызывает саму себя.',
           line: line,
         );
@@ -393,6 +509,60 @@ class PythonInterpreter {
           return target.toLowerCase();
         case 'strip':
           return target.trim();
+        case 'replace':
+          if (args.length != 2 || args[0] is! String || args[1] is! String) {
+            throw PythonError(
+              'replace() принимает два кусочка текста: replace(что, на что)',
+              line: line,
+            );
+          }
+          final from = args[0] as String;
+          if (from.isEmpty) {
+            throw _ValueErr('replace() не может искать пустой кусочек', line: line);
+          }
+          return target.replaceAll(from, args[1] as String);
+        case 'count':
+          if (args.length != 1 || args[0] is! String) {
+            throw PythonError('count() принимает один кусочек текста', line: line);
+          }
+          return _countOccurrences(target, args[0] as String);
+        case 'split':
+          if (args.length > 1) {
+            throw PythonError(
+              'split() принимает не больше одного разделителя',
+              line: line,
+            );
+          }
+          if (args.isEmpty) {
+            // Без аргумента делим по любым пробелам, как в Python.
+            if (target.trim().isEmpty) return <String>[];
+            return target
+                .split(RegExp(r'\s+'))
+                .where((w) => w.isNotEmpty)
+                .toList();
+          }
+          if (args[0] is! String) {
+            throw _TypeErr('split() ждёт текст-разделитель', line: line);
+          }
+          final sep = args[0] as String;
+          if (sep.isEmpty) {
+            throw _ValueErr('Разделитель не может быть пустым', line: line);
+          }
+          return target.split(sep);
+        case 'join':
+          if (args.length != 1 || args[0] is! List) {
+            throw PythonError('join() принимает список строк', line: line);
+          }
+          final parts = args[0] as List;
+          for (final p in parts) {
+            if (p is! String) {
+              throw _TypeErr(
+                'join() склеивает только строки, а внутри списка ${pyType(p)}',
+                line: line,
+              );
+            }
+          }
+          return parts.cast<String>().join(target);
       }
     }
     if (target is PyDict) {
@@ -418,6 +588,9 @@ class PythonInterpreter {
     }
     if (target is PyTurtle) {
       return _turtleMethod(target, name, args, line);
+    }
+    if (target is PyRandomModule) {
+      return target.call(name, args, line);
     }
     throw PythonError(
       'У ${pyType(target)} нет метода «$name»',
@@ -480,6 +653,19 @@ class PythonInterpreter {
     return args[0];
   }
 
+  /// Сколько раз кусочек встречается в строке (не внахлёст, как в Python).
+  int _countOccurrences(String text, String part) {
+    if (part.isEmpty) return 0;
+    int count = 0;
+    int from = 0;
+    while (true) {
+      final i = text.indexOf(part, from);
+      if (i < 0) return count;
+      count++;
+      from = i + part.length;
+    }
+  }
+
   void _turtleMove(PyTurtle t, double distance, int line) {
     final rad = t.angle * math.pi / 180.0;
     _turtleLineTo(
@@ -493,7 +679,7 @@ class PythonInterpreter {
   void _turtleLineTo(PyTurtle t, double nx, double ny, int line) {
     if (t.penDown) {
       if (turtleSegments.length > 4000) {
-        throw PythonError(
+        throw _LimitErr(
           'Черепашка нарисовала слишком много линий',
           line: line,
         );
@@ -529,7 +715,7 @@ class PythonInterpreter {
       if (a is String && b is String) return a + b;
       if (a is List && b is List) return [...a, ...b];
       if (a is num && b is num) return _addNums(a, b);
-      throw PythonError(
+      throw _TypeErr(
         'Нельзя сложить ${pyType(a)} и ${pyType(b)}',
         line: line,
       );
@@ -542,7 +728,7 @@ class PythonInterpreter {
         return [for (int i = 0; i < n; i++) ...a];
       }
       if (a is num && b is num) return _mulNums(a, b);
-      throw PythonError('Нельзя умножить ${pyType(a)} на ${pyType(b)}', line: line);
+      throw _TypeErr('Нельзя умножить ${pyType(a)} на ${pyType(b)}', line: line);
     }
     final x = _asNum(a, line);
     final y = _asNum(b, line);
@@ -551,18 +737,18 @@ class PythonInterpreter {
         return x - y;
       case '/':
         if (y == 0) {
-          throw PythonError('Деление на ноль', line: line);
+          throw _ZeroDivErr('Деление на ноль', line: line);
         }
         return x / y;
       case '//':
         if (y == 0) {
-          throw PythonError('Деление на ноль', line: line);
+          throw _ZeroDivErr('Деление на ноль', line: line);
         }
         final r = x / y;
         return r.floor();
       case '%':
         if (y == 0) {
-          throw PythonError('Деление на ноль', line: line);
+          throw _ZeroDivErr('Деление на ноль', line: line);
         }
         final r = x % y;
         return r is double && r == r.roundToDouble() ? r.round() : r;
@@ -812,14 +998,14 @@ class PythonInterpreter {
 
   num _asNum(Object? v, int line) {
     if (v is num) return v;
-    throw PythonError('Ожидалось число, а получено ${pyType(v)}', line: line);
+    throw _TypeErr('Ожидалось число, а получено ${pyType(v)}', line: line);
   }
 
   int _asInt(Object? v, int line) {
     if (v is int) return v;
     if (v is double) return v.truncate();
     if (v is bool) return v ? 1 : 0;
-    throw PythonError('Ожидалось целое число, а получено ${pyType(v)}', line: line);
+    throw _TypeErr('Ожидалось целое число, а получено ${pyType(v)}', line: line);
   }
 
   bool _truthy(Object? v) {
@@ -837,7 +1023,7 @@ class PythonInterpreter {
   void _installBuiltins(PyEnv env) {
     env.define('print', PyBuiltin('print', (args) {
       if (output.length >= maxOutputLines) {
-        throw PythonError('Слишком много строк вывода');
+        throw _LimitErr('Слишком много строк вывода');
       }
       output.add(args.map(pyStr).join(' '));
       return null;
@@ -848,7 +1034,7 @@ class PythonInterpreter {
       if (v is String) return v.length;
       if (v is List) return v.length;
       if (v is PyDict) return v.length;
-      throw PythonError('len() работает только со строкой, списком или словарём');
+      throw _TypeErr('len() работает только со строкой, списком или словарём');
     }));
     env.define('range', PyBuiltin('range', (args) {
       if (args.isEmpty || args.length > 3) {
@@ -895,7 +1081,7 @@ class PythonInterpreter {
       if (v is String) {
         final parsed = int.tryParse(v.trim());
         if (parsed == null) {
-          throw PythonError('int() не может превратить «$v» в число');
+          throw _ValueErr('int() не может превратить «$v» в число');
         }
         return parsed;
       }
@@ -925,6 +1111,24 @@ class PythonInterpreter {
       }
       return total;
     }));
+    // sorted(список) — новый отсортированный список (исходный не меняется).
+    env.define('sorted', PyBuiltin('sorted', (args) {
+      _arity(args, 1, 'sorted');
+      final v = args[0];
+      if (v is! List) {
+        throw _TypeErr('sorted() принимает список');
+      }
+      final copy = List<Object?>.of(v);
+      copy.sort((a, b) {
+        if (a is num && b is num) return a.compareTo(b);
+        if (a is String && b is String) return a.compareTo(b);
+        throw _TypeErr(
+          'sorted() не умеет сравнивать ${pyType(a)} и ${pyType(b)} — '
+          'в одном списке должны быть только числа или только строки',
+        );
+      });
+      return copy;
+    }));
     // input(...) задаёт вопрос и получает заранее заготовленный ответ.
     // Если ответов больше нет — возвращает пустую строку.
     env.define('input', PyBuiltin('input', (args) {
@@ -933,7 +1137,7 @@ class PythonInterpreter {
       }
       if (args.isNotEmpty && pyStr(args[0]).isNotEmpty) {
         if (output.length >= maxOutputLines) {
-          throw PythonError('Слишком много строк вывода');
+          throw _LimitErr('Слишком много строк вывода');
         }
         output.add(pyStr(args[0]));
       }
@@ -973,6 +1177,7 @@ String pyStr(Object? v) {
   }
   if (v is PyFunction) return '<функция ${v.name}>';
   if (v is PyTurtle) return '<черепашка>';
+  if (v is PyRandomModule) return '<модуль random>';
   if (v is double) {
     if (v.isFinite && v == v.roundToDouble() && v.abs() < 1e16) {
       return v.toStringAsFixed(1);
@@ -998,5 +1203,6 @@ String pyType(Object? v) {
   if (v is PyDict) return 'словарь';
   if (v is PyFunction) return 'функция';
   if (v is PyTurtle) return 'черепашка';
+  if (v is PyRandomModule) return 'модуль random';
   return 'значение';
 }

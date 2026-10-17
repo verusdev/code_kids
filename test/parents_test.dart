@@ -1,3 +1,5 @@
+import 'package:code_kids/models/game_models.dart';
+import 'package:code_kids/python/lessons/python_course.dart';
 import 'package:code_kids/screens/parents_screen.dart';
 import 'package:code_kids/services/achievements_service.dart';
 import 'package:code_kids/services/daily_service.dart';
@@ -8,6 +10,14 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
+  // Максимум звёзд и уровней считаем из реестра игр, а не хардкодим:
+  // экран «Родителям» берёт те же данные из [...kGames, ...kSystemGames,
+  // kPythonCourse], по 3 звезды за уровень.
+  final allGames = <GameInfo>[...kGames, ...kSystemGames, kPythonCourse];
+  final maxStars =
+      allGames.fold<int>(0, (sum, g) => sum + g.levelCount * 3);
+  final maxLevels = allGames.fold<int>(0, (sum, g) => sum + g.levelCount);
+
   setUp(() async {
     SharedPreferences.setMockInitialValues({});
     await ProgressService.instance.reset();
@@ -31,13 +41,14 @@ void main() {
       expect(find.text('💡 Как помочь ребёнку'), findsOneWidget);
       expect(find.text('🔧 Настройки'), findsOneWidget);
 
-      // Звёзды: 3 из (10 игр по 45 + 20*3) = 3 из 510.
-      expect(find.text('3 из 510'), findsOneWidget);
-      expect(find.text('1 из 170'), findsOneWidget); // уровней пройдено
+      // Звёзды: 3 из максимума по всему реестру игр и Python-курсу.
+      expect(find.text('3 из $maxStars'), findsOneWidget);
+      expect(find.text('1 из $maxLevels'), findsOneWidget); // уровней пройдено
 
-      // Строка «Робот-Лабиринт» с прогрессом 3/45.
+      // Строка «Робот-Лабиринт»: 3 звезды из levelCount * 3.
+      final maze = gameById('maze');
       expect(find.text('Робот-Лабиринт'), findsOneWidget);
-      expect(find.text('3 / 45 ⭐'), findsWidgets);
+      expect(find.text('3 / ${maze.levelCount * 3} ⭐'), findsOneWidget);
     });
 
     testWidgets('сброс прогресса по кнопке очищает звёзды', (tester) async {
@@ -57,7 +68,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(ProgressService.instance.totalStars('maze'), 0);
-      expect(find.text('0 из 510'), findsOneWidget);
+      expect(find.text('0 из $maxStars'), findsOneWidget);
     });
   });
 

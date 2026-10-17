@@ -8,6 +8,10 @@ import '../theme/app_theme.dart';
 /// Программа — это список блоков. Здесь можно добавлять простые команды,
 /// вкладывать их в цикл «повторить N раз» и в условие «если …».
 /// Списки (в т.ч. тела циклов) редактируются прямо на месте.
+///
+/// Если передано определение «моей функции» ([function]), в панели добавления
+/// появляется кнопка «Моя функция» — она вставляет блок-вызов, который при
+/// выполнении разворачивается в команды функции.
 class BlockEditor extends StatelessWidget {
   const BlockEditor({
     super.key,
@@ -17,6 +21,12 @@ class BlockEditor extends StatelessWidget {
     this.conditionLabel,
     this.enabled = true,
     this.depth = 0,
+    this.function,
+    this.canCallFunction = true,
+    this.onCreateFunction,
+    this.simpleOnly = false,
+    this.maxNodes,
+    this.hideContainers = false,
   });
 
   /// Редактируемый список блоков.
@@ -36,10 +46,32 @@ class BlockEditor extends StatelessWidget {
   /// Текущая глубина вложенности (0 — верхний уровень программы).
   final int depth;
 
-  bool get _canAddContainer =>
-      enabled && depth + 1 < kBlockMaxNesting;
+  /// Определение «моей функции»; если задано, можно добавлять вызовы.
+  final FunctionDef? function;
 
-  bool get _hasRoom => countBlocks(nodes) < kBlockMaxTotal;
+  /// Можно ли добавить ещё один вызов функции (лимит [kFunctionMaxCalls]).
+  final bool canCallFunction;
+
+  /// Создать «мою функцию»; null — кнопка создания не показывается.
+  final VoidCallback? onCreateFunction;
+
+  /// true — только простые команды (для тела «моей функции»):
+  /// циклы, условия и вызовы скрываются.
+  final bool simpleOnly;
+
+  /// Максимальное число блоков в этом списке (для тела функции — 5).
+  final int? maxNodes;
+
+  /// true — скрыть кнопки контейнеров («Повторить» и «если …»):
+  /// используется на уровнях, где циклы отключены.
+  final bool hideContainers;
+
+  bool get _canAddContainer =>
+      enabled && !simpleOnly && !hideContainers && depth + 1 < kBlockMaxNesting;
+
+  bool get _hasRoom =>
+      countBlocks(nodes) < kBlockMaxTotal &&
+      (maxNodes == null || nodes.length < maxNodes!);
 
   void _add(BlockNode node) {
     if (!_hasRoom) return;
@@ -91,10 +123,12 @@ class BlockEditor extends StatelessWidget {
           title: '🧱 ${conditionLabel ?? 'Если'}',
           color: AppTheme.sky,
         ),
+      FunctionCallBlock() => _functionCallRow(node, index),
     };
   }
 
   Widget _commandRow(CommandBlock node, int index) {
+    final accent = node.def.color ?? AppTheme.purple;
     return Padding(
       padding: const EdgeInsets.only(bottom: 6),
       child: Row(
@@ -102,17 +136,56 @@ class BlockEditor extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
-              color: AppTheme.purple.withValues(alpha: 0.14),
+              color: accent.withValues(alpha: 0.14),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(node.def.icon, size: 20, color: AppTheme.purple),
+                Icon(node.def.icon, size: 20, color: accent),
                 const SizedBox(width: 6),
                 Text(
                   node.def.label,
                   style: const TextStyle(fontWeight: FontWeight.w700),
+                ),
+              ],
+            ),
+          ),
+          if (enabled)
+            IconButton(
+              onPressed: () => _removeAt(index),
+              icon: const Icon(Icons.close_rounded, size: 20),
+              color: Colors.grey,
+              tooltip: 'Убрать блок',
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _functionCallRow(FunctionCallBlock node, int index) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: AppTheme.teal.withValues(alpha: 0.14),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: AppTheme.teal.withValues(alpha: 0.7),
+                width: 2,
+              ),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(node.function.icon, style: const TextStyle(fontSize: 18)),
+                const SizedBox(width: 6),
+                const Text(
+                  'Моя функция',
+                  style: TextStyle(fontWeight: FontWeight.w800),
                 ),
               ],
             ),
@@ -213,6 +286,10 @@ class BlockEditor extends StatelessWidget {
               conditionLabel: conditionLabel,
               enabled: enabled && depth + 1 < kBlockMaxNesting,
               depth: depth + 1,
+              function: function,
+              canCallFunction: canCallFunction,
+              onCreateFunction: null,
+              hideContainers: hideContainers,
             ),
           ),
         ],
@@ -230,7 +307,7 @@ class BlockEditor extends StatelessWidget {
           _miniButton(
             label: command.label,
             icon: command.icon,
-            color: AppTheme.purple,
+            color: command.color ?? AppTheme.purple,
             onTap: canAdd ? () => _add(CommandBlock(command)) : null,
           ),
         if (_canAddContainer)
@@ -246,6 +323,22 @@ class BlockEditor extends StatelessWidget {
             icon: Icons.rule_rounded,
             color: AppTheme.sky,
             onTap: canAdd ? () => _add(IfBlock()) : null,
+          ),
+        if (!simpleOnly && function != null)
+          _miniButton(
+            label: 'Моя функция',
+            icon: Icons.play_circle_fill_rounded,
+            color: AppTheme.teal,
+            onTap: canAdd && canCallFunction
+                ? () => _add(FunctionCallBlock(function!))
+                : null,
+          ),
+        if (!simpleOnly && function == null && onCreateFunction != null)
+          _miniButton(
+            label: 'Моя функция',
+            icon: Icons.add_circle_rounded,
+            color: AppTheme.teal,
+            onTap: canAdd ? onCreateFunction : null,
           ),
       ],
     );

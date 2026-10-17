@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'profile_service.dart';
+
 /// Общее состояние текущего «Испытания»: активно ли оно и какой идёт уровень.
 ///
 /// Игры читают это состояние, чтобы во время испытания спрятать подсказки и
@@ -42,12 +44,20 @@ class ChallengeSession {
 }
 
 /// Рекорд «Испытания»: лучшее время прохождения всех заданий.
-class ChallengeService {
+///
+/// Данные хранятся отдельно для каждого профиля ребёнка:
+/// ключ `<base>::<profileId>` (см. [ProfileService.storageKey]).
+/// Старый «глобальный» ключ при первом запуске мигрируется на профиль
+/// по умолчанию и не удаляется.
+class ChallengeService extends ChangeNotifier {
   ChallengeService._();
 
   static final ChallengeService instance = ChallengeService._();
 
-  static const String _key = 'code_kids_challenge_v1';
+  static const String _baseKey = 'code_kids_challenge_v1';
+
+  /// Ключ хранилища текущего профиля.
+  String get _storageKey => ProfileService.instance.storageKey(_baseKey);
 
   int _bestSeconds = 0;
 
@@ -57,8 +67,39 @@ class ChallengeService {
   bool get hasRecord => _bestSeconds > 0;
 
   Future<void> load() async {
-    final prefs = await SharedPreferences.getInstance();
-    _bestSeconds = prefs.getInt(_key) ?? 0;
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await _migrateLegacy(prefs);
+      _bestSeconds = prefs.getInt(_storageKey) ?? 0;
+    } catch (_) {
+      _bestSeconds = 0;
+    }
+    notifyListeners();
+  }
+
+  /// Перечитать рекорд текущего профиля с диска (после смены профиля
+  /// или импорта).
+  Future<void> reload() async {
+    _bestSeconds = 0;
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      _bestSeconds = prefs.getInt(_storageKey) ?? 0;
+    } catch (_) {
+      _bestSeconds = 0;
+    }
+    notifyListeners();
+  }
+
+  /// Миграция: старый глобальный ключ (без профиля) принадлежит профилю
+  /// по умолчанию. Старое значение не удаляется, повторный запуск
+  /// ничего не делает (данные уже перенесены).
+  Future<void> _migrateLegacy(SharedPreferences prefs) async {
+    final defaultKey = ProfileService.instance
+        .storageKeyFor(_baseKey, ProfileService.defaultProfileId);
+    if (prefs.getInt(defaultKey) != null) return;
+    final legacy = prefs.getInt(_baseKey);
+    if (legacy == null) return;
+    await prefs.setInt(defaultKey, legacy);
   }
 
   /// Записывает время, если оно лучше прежнего рекорда.
@@ -68,14 +109,29 @@ class ChallengeService {
     if (_bestSeconds > 0 && seconds >= _bestSeconds) return false;
     _bestSeconds = seconds;
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt(_key, seconds);
+    await prefs.setInt(_storageKey, seconds);
     return true;
+  }
+
+  /// Данные для экспорта: лучшее время в секундах (0 — рекорда нет).
+  int exportData() => _bestSeconds;
+
+  /// Восстановить рекорд из импортированного значения (некорректные
+  /// значения приводятся к 0 — «рекорда нет»).
+  Future<void> importData(int seconds) async {
+    _bestSeconds = seconds > 0 ? seconds : 0;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_storageKey, _bestSeconds);
+    notifyListeners();
   }
 
   Future<void> reset() async {
     _bestSeconds = 0;
+    // Пишем 0, а не удаляем ключ: иначе при следующем запуске миграция
+    // снова скопирует старый глобальный рекорд, и данные «воскреснут».
     final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_key);
+    await prefs.setInt(_storageKey, 0);
+    notifyListeners();
   }
 }
 

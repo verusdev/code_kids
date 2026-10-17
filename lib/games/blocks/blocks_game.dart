@@ -381,7 +381,833 @@ final List<MazeLevel> _blockLevels = [
     goalY: 8,
     hint: 'Самый длинный лабиринт: чередуй циклы вверх-вниз и короткие повороты вбок.',
   ),
+  MazeLevel(
+    cols: 8,
+    rows: 8,
+    walls: _walls(8, [
+      [1, 1],
+      [2, 1],
+      [3, 1],
+      [4, 1],
+      [5, 1],
+      [6, 1],
+      [1, 3],
+      [2, 3],
+      [3, 3],
+      [4, 3],
+      [5, 3],
+      [6, 3],
+      [1, 5],
+      [2, 5],
+      [3, 5],
+      [4, 5],
+      [5, 5],
+      [6, 5],
+    ]),
+    startX: 0,
+    startY: 0,
+    startDir: Direction.right,
+    goalX: 7,
+    goalY: 7,
+    hint: 'Три горизонтальные перегородки: после каждой проём на другом краю. Длинные отрезки — циклами!',
+  ),
+  MazeLevel(
+    cols: 9,
+    rows: 9,
+    walls: _walls(9, [
+      [1, 0],
+      [1, 1],
+      [1, 2],
+      [1, 3],
+      [1, 4],
+      [1, 5],
+      [1, 6],
+      [1, 7],
+      [3, 1],
+      [3, 2],
+      [3, 3],
+      [3, 4],
+      [3, 5],
+      [3, 6],
+      [3, 7],
+      [3, 8],
+      [5, 0],
+      [5, 1],
+      [5, 2],
+      [5, 3],
+      [5, 4],
+      [5, 5],
+      [5, 6],
+      [5, 7],
+      [7, 1],
+      [7, 2],
+      [7, 3],
+      [7, 4],
+      [7, 5],
+      [7, 6],
+      [7, 7],
+      [7, 8],
+    ]),
+    startX: 0,
+    startY: 8,
+    startDir: Direction.right,
+    goalX: 8,
+    goalY: 0,
+    hint: 'Четыре высокие перегородки: змейка вверх-вниз. Восемь шагов по прямой — цикл из шести плюс два одиночных!',
+  ),
+  MazeLevel(
+    cols: 8,
+    rows: 8,
+    walls: _walls(8, [
+      [1, 2],
+      [3, 4],
+      [5, 6],
+    ]),
+    startX: 0,
+    startY: 0,
+    startDir: Direction.right,
+    goalX: 6,
+    goalY: 7,
+    hint: 'Лесенка из ступенек: два вперёд — поворот — два вперёд — поворот. Повтори узор три раза!',
+  ),
+  MazeLevel(
+    cols: 8,
+    rows: 8,
+    walls: _walls(8, [
+      [2, 2],
+      [3, 2],
+      [4, 2],
+      [5, 2],
+      [6, 2],
+      [6, 3],
+      [6, 5],
+      [2, 3],
+      [2, 4],
+      [2, 5],
+      [2, 6],
+      [3, 6],
+      [4, 6],
+      [5, 6],
+      [6, 6],
+    ]),
+    startX: 0,
+    startY: 0,
+    startDir: Direction.right,
+    goalX: 4,
+    goalY: 4,
+    hint: 'Стенка-замок с дверью справа. Обойди её по краю и войди в дверку — внутри ждёт флажок!',
+  ),
+  MazeLevel(
+    cols: 8,
+    rows: 8,
+    walls: _walls(8, [
+      [1, 1],
+      [1, 2],
+      [1, 3],
+      [1, 4],
+      [1, 5],
+      [1, 6],
+      [3, 1],
+      [3, 2],
+      [3, 3],
+      [3, 4],
+      [3, 5],
+      [3, 6],
+      [5, 1],
+      [5, 2],
+      [5, 3],
+      [5, 4],
+      [5, 5],
+      [5, 6],
+    ]),
+    startX: 0,
+    startY: 0,
+    startDir: Direction.down,
+    goalX: 7,
+    goalY: 7,
+    hint: 'Три высокие перегородки: спускайся вниз, разворачивайся и поднимайся вверх. Длинные отрезки — циклами!',
+  ),
+  MazeLevel(
+    cols: 9,
+    rows: 9,
+    walls: _walls(9, [
+      [2, 1],
+      [2, 2],
+      [2, 3],
+      [2, 4],
+      [2, 5],
+      [2, 6],
+      [2, 7],
+      [4, 1],
+      [4, 2],
+      [4, 3],
+      [4, 4],
+      [4, 5],
+      [4, 6],
+      [4, 7],
+      [6, 1],
+      [6, 2],
+      [6, 3],
+      [6, 4],
+      [6, 5],
+      [6, 6],
+      [6, 7],
+    ]),
+    startX: 0,
+    startY: 8,
+    startDir: Direction.right,
+    goalX: 8,
+    goalY: 0,
+    hint: 'Вертикальная змейка через три перегородки: восемь шагов вверх или вниз — цикл из шести плюс два шага!',
+  ),
+  MazeLevel(
+    cols: 8,
+    rows: 8,
+    walls: _walls(8, [
+      [4, 1],
+      [4, 2],
+      [4, 5],
+      [4, 6],
+      [2, 4],
+      [3, 4],
+      [5, 4],
+      [6, 4],
+    ]),
+    startX: 0,
+    startY: 0,
+    startDir: Direction.right,
+    goalX: 4,
+    goalY: 4,
+    hint: 'От флажка в центре расходятся четыре стены-луча. Обойди поле по краю и войди в центр сверху!',
+  ),
+  MazeLevel(
+    cols: 8,
+    rows: 8,
+    walls: _walls(8, [
+      [1, 6],
+      [3, 4],
+      [5, 2],
+      [6, 6],
+    ]),
+    startX: 0,
+    startY: 7,
+    startDir: Direction.right,
+    goalX: 7,
+    goalY: 0,
+    hint: 'Ступеньки вверх: два вперёд, поворот, два вперёд, поворот. Узор повторяется три раза!',
+  ),
+  MazeLevel(
+    cols: 8,
+    rows: 8,
+    walls: _walls(8, [
+      [0, 3],
+      [0, 6],
+      [7, 2],
+      [3, 5],
+    ]),
+    startX: 0,
+    startY: 0,
+    startDir: Direction.down,
+    goalX: 7,
+    goalY: 7,
+    hint: 'Пружина вниз-вправо: два вперёд, поворот, два вперёд, поворот. Узор три раза — и флажок в углу!',
+  ),
+  MazeLevel(
+    cols: 9,
+    rows: 9,
+    walls: _walls(9, [
+      [1, 1],
+      [2, 1],
+      [3, 1],
+      [4, 1],
+      [5, 1],
+      [3, 3],
+      [4, 3],
+      [5, 3],
+      [6, 3],
+      [7, 3],
+    ]),
+    startX: 0,
+    startY: 0,
+    startDir: Direction.right,
+    goalX: 8,
+    goalY: 4,
+    hint: 'Длинная S-труба: шесть вперёд, два вниз, шесть назад. Между отрезками — только повороты!',
+  ),
+  MazeLevel(
+    cols: 8,
+    rows: 8,
+    walls: _walls(8, [
+      [2, 2],
+      [3, 2],
+      [4, 2],
+      [5, 2],
+      [2, 4],
+      [2, 5],
+      [3, 5],
+      [4, 5],
+      [5, 5],
+      [5, 3],
+      [5, 4],
+    ]),
+    startX: 0,
+    startY: 0,
+    startDir: Direction.down,
+    goalX: 4,
+    goalY: 4,
+    hint: 'Замок с одной дверью слева. Подойди к дверке и войди внутрь к флажку!',
+  ),
+  MazeLevel(
+    cols: 9,
+    rows: 9,
+    walls: _walls(9, [
+      [0, 1],
+      [1, 1],
+      [2, 1],
+      [3, 1],
+      [4, 1],
+      [5, 1],
+      [6, 1],
+      [7, 1],
+      [1, 3],
+      [2, 3],
+      [3, 3],
+      [4, 3],
+      [5, 3],
+      [6, 3],
+      [7, 3],
+      [8, 3],
+      [0, 5],
+      [1, 5],
+      [2, 5],
+      [3, 5],
+      [4, 5],
+      [5, 5],
+      [6, 5],
+      [7, 5],
+      [1, 7],
+      [2, 7],
+      [3, 7],
+      [4, 7],
+      [5, 7],
+      [6, 7],
+      [7, 7],
+      [8, 7],
+    ]),
+    startX: 0,
+    startY: 0,
+    startDir: Direction.right,
+    goalX: 8,
+    goalY: 8,
+    hint: 'Четыре длинные перегородки: после каждой проём на другом краю. Отрезки по девять — цикл из шести плюс два шага!',
+  ),
+  MazeLevel(
+    cols: 8,
+    rows: 8,
+    walls: _walls(8, [
+      [2, 2],
+      [3, 2],
+      [5, 2],
+      [2, 3],
+      [5, 3],
+      [2, 4],
+      [3, 4],
+      [4, 4],
+      [5, 4],
+    ]),
+    startX: 0,
+    startY: 0,
+    startDir: Direction.right,
+    goalX: 4,
+    goalY: 3,
+    hint: 'Спираль-замок с дверью сверху: длинные отрезки по краю — циклами, а в дверку войди сверху вниз!',
+  ),
+  MazeLevel(
+    cols: 8,
+    rows: 8,
+    walls: _walls(8, [
+      [1, 6],
+      [3, 4],
+      [5, 2],
+      [0, 4],
+    ]),
+    startX: 0,
+    startY: 7,
+    startDir: Direction.up,
+    goalX: 7,
+    goalY: 0,
+    hint: 'Пружина вверх-вправо: два вперёд, поворот, два вперёд, поворот. Узор три раза — и флажок в углу!',
+  ),
+  MazeLevel(
+    cols: 10,
+    rows: 10,
+    walls: _walls(10, [
+      [1, 2],
+      [2, 2],
+      [3, 2],
+      [4, 2],
+      [5, 2],
+      [6, 2],
+      [7, 2],
+      [8, 2],
+      [3, 5],
+      [4, 5],
+      [5, 5],
+      [6, 5],
+      [3, 6],
+      [6, 6],
+      [6, 7],
+      [6, 8],
+      [3, 8],
+      [4, 8],
+      [5, 8],
+    ]),
+    startX: 0,
+    startY: 0,
+    startDir: Direction.right,
+    goalX: 5,
+    goalY: 7,
+    hint: 'Финал: длинная змейка через поле, потом замок с дверкой слева. Собери всё из циклов — и к флажку!',
+  ),
+  // 31: введение в «Мою функцию» — лесенка из маленьких ступенек.
+  MazeLevel(
+    cols: 7,
+    rows: 7,
+    walls: {},
+    startX: 0,
+    startY: 6,
+    startDir: Direction.up,
+    goalX: 6,
+    goalY: 0,
+    hint: 'Новая суперсила «Моя функция»! Собери в ней шаг-вверх-шаг-вправо, а потом вызови её шесть раз циклом!',
+  ),
+  // 32: пружина вниз-вправо — та же ступенька в другую сторону.
+  MazeLevel(
+    cols: 7,
+    rows: 7,
+    walls: {},
+    startX: 0,
+    startY: 0,
+    startDir: Direction.down,
+    goalX: 6,
+    goalY: 6,
+    hint: 'Ступенька-пружинка: в функции — шаг вниз и шаг вправо. Вызови её циклом шесть раз!',
+  ),
+  // 33: маленькая змейка — функция «пять шагов вперёд» вызывается три раза.
+  MazeLevel(
+    cols: 6,
+    rows: 5,
+    walls: _walls(6, [
+      [0, 1],
+      [1, 1],
+      [2, 1],
+      [3, 1],
+      [4, 1],
+      [1, 3],
+      [2, 3],
+      [3, 3],
+      [4, 3],
+      [5, 3],
+    ]),
+    startX: 0,
+    startY: 0,
+    startDir: Direction.right,
+    goalX: 5,
+    goalY: 4,
+    hint: 'Собери функцию «пять шагов вперёд» — она пройдёт каждый длинный ряд. Между рядами только поворот и два шага!',
+  ),
+  // 34: длинная лесенка — две «Повторить» с одинаковой функцией.
+  MazeLevel(
+    cols: 9,
+    rows: 9,
+    walls: {},
+    startX: 0,
+    startY: 8,
+    startDir: Direction.up,
+    goalX: 8,
+    goalY: 0,
+    hint: 'Восемь ступенек вверх-вправо! Ступенька живёт в «Моей функции», а две «Повторить» доведут до верха.',
+  ),
+  // 35: змейка подлиннее — четыре вызова функции «пять шагов».
+  MazeLevel(
+    cols: 6,
+    rows: 9,
+    walls: _walls(6, [
+      [0, 1],
+      [1, 1],
+      [2, 1],
+      [3, 1],
+      [4, 1],
+      [1, 3],
+      [2, 3],
+      [3, 3],
+      [4, 3],
+      [5, 3],
+      [0, 5],
+      [1, 5],
+      [2, 5],
+      [3, 5],
+      [4, 5],
+      [1, 7],
+      [2, 7],
+      [3, 7],
+      [4, 7],
+      [5, 7],
+    ]),
+    startX: 0,
+    startY: 0,
+    startDir: Direction.right,
+    goalX: 0,
+    goalY: 8,
+    hint: 'Функция «пять шагов вперёд» поможет пройти длинные ряды. Циклы для рядов уже не нужны — только повороты!',
+  ),
+  // 36: циклы отключены — только «Моя функция» (горизонтальная змейка 10×7).
+  MazeLevel(
+    cols: 10,
+    rows: 7,
+    walls: _walls(10, [
+      [0, 1],
+      [1, 1],
+      [2, 1],
+      [3, 1],
+      [4, 1],
+      [5, 1],
+      [6, 1],
+      [7, 1],
+      [8, 1],
+      [1, 3],
+      [2, 3],
+      [3, 3],
+      [4, 3],
+      [5, 3],
+      [6, 3],
+      [7, 3],
+      [8, 3],
+      [9, 3],
+      [0, 5],
+      [1, 5],
+      [2, 5],
+      [3, 5],
+      [4, 5],
+      [5, 5],
+      [6, 5],
+      [7, 5],
+      [8, 5],
+    ]),
+    startX: 0,
+    startY: 0,
+    startDir: Direction.right,
+    goalX: 0,
+    goalY: 6,
+    hint: 'Циклы тут отключены! Собери функцию «пять шагов вперёд» и зови её по нескольку раз в каждом ряду.',
+  ),
+  // 37: циклы отключены — вертикальная змейка 9×7, пять столбцов.
+  MazeLevel(
+    cols: 9,
+    rows: 7,
+    walls: _walls(9, [
+      [1, 0],
+      [1, 1],
+      [1, 2],
+      [1, 3],
+      [1, 4],
+      [1, 5],
+      [3, 1],
+      [3, 2],
+      [3, 3],
+      [3, 4],
+      [3, 5],
+      [3, 6],
+      [5, 0],
+      [5, 1],
+      [5, 2],
+      [5, 3],
+      [5, 4],
+      [5, 5],
+      [7, 1],
+      [7, 2],
+      [7, 3],
+      [7, 4],
+      [7, 5],
+      [7, 6],
+    ]),
+    startX: 0,
+    startY: 0,
+    startDir: Direction.down,
+    goalX: 8,
+    goalY: 6,
+    hint: 'Вертикальные ряды тоже любят функцию «пять шагов вперёд». Между рядами — развороты: поверни и шагни через проём!',
+  ),
+  // 38: циклы отключены — змейка 9×7, четыре ряда.
+  MazeLevel(
+    cols: 9,
+    rows: 7,
+    walls: _walls(9, [
+      [0, 1],
+      [1, 1],
+      [2, 1],
+      [3, 1],
+      [4, 1],
+      [5, 1],
+      [6, 1],
+      [7, 1],
+      [1, 3],
+      [2, 3],
+      [3, 3],
+      [4, 3],
+      [5, 3],
+      [6, 3],
+      [7, 3],
+      [8, 3],
+      [0, 5],
+      [1, 5],
+      [2, 5],
+      [3, 5],
+      [4, 5],
+      [5, 5],
+      [6, 5],
+      [7, 5],
+    ]),
+    startX: 0,
+    startY: 0,
+    startDir: Direction.right,
+    goalX: 0,
+    goalY: 6,
+    hint: 'Ряд из восьми шагов = вызов функции «пять шагов» плюс три шага вперёд. Без циклов, зато надёжно!',
+  ),
+  // 39: циклы отключены — змейка 8×9, пять рядов длиной семь.
+  MazeLevel(
+    cols: 8,
+    rows: 9,
+    walls: _walls(8, [
+      [0, 1],
+      [1, 1],
+      [2, 1],
+      [3, 1],
+      [4, 1],
+      [5, 1],
+      [6, 1],
+      [1, 3],
+      [2, 3],
+      [3, 3],
+      [4, 3],
+      [5, 3],
+      [6, 3],
+      [7, 3],
+      [0, 5],
+      [1, 5],
+      [2, 5],
+      [3, 5],
+      [4, 5],
+      [5, 5],
+      [6, 5],
+      [1, 7],
+      [2, 7],
+      [3, 7],
+      [4, 7],
+      [5, 7],
+      [6, 7],
+      [7, 7],
+    ]),
+    startX: 0,
+    startY: 0,
+    startDir: Direction.right,
+    goalX: 7,
+    goalY: 8,
+    hint: 'Пять длинных рядов: вызов функции «пять шагов» и два шага вперёд на каждый ряд.',
+  ),
+  // 40: циклы отключены — змейка 7×9, пять рядов длиной шесть.
+  MazeLevel(
+    cols: 7,
+    rows: 9,
+    walls: _walls(7, [
+      [0, 1],
+      [1, 1],
+      [2, 1],
+      [3, 1],
+      [4, 1],
+      [5, 1],
+      [1, 3],
+      [2, 3],
+      [3, 3],
+      [4, 3],
+      [5, 3],
+      [6, 3],
+      [0, 5],
+      [1, 5],
+      [2, 5],
+      [3, 5],
+      [4, 5],
+      [5, 5],
+      [1, 7],
+      [2, 7],
+      [3, 7],
+      [4, 7],
+      [5, 7],
+      [6, 7],
+    ]),
+    startX: 0,
+    startY: 0,
+    startDir: Direction.right,
+    goalX: 6,
+    goalY: 8,
+    hint: 'Пять длинных рядов без циклов! Ряд из шести = вызов функции «пять шагов» плюс один шаг.',
+  ),
+  // 41: циклы отключены — большая вертикальная змейка 9×9, пять столбцов.
+  MazeLevel(
+    cols: 9,
+    rows: 9,
+    walls: _walls(9, [
+      [1, 0],
+      [1, 1],
+      [1, 2],
+      [1, 3],
+      [1, 4],
+      [1, 5],
+      [1, 6],
+      [1, 7],
+      [3, 1],
+      [3, 2],
+      [3, 3],
+      [3, 4],
+      [3, 5],
+      [3, 6],
+      [3, 7],
+      [3, 8],
+      [5, 0],
+      [5, 1],
+      [5, 2],
+      [5, 3],
+      [5, 4],
+      [5, 5],
+      [5, 6],
+      [5, 7],
+      [7, 1],
+      [7, 2],
+      [7, 3],
+      [7, 4],
+      [7, 5],
+      [7, 6],
+      [7, 7],
+      [7, 8],
+    ]),
+    startX: 0,
+    startY: 0,
+    startDir: Direction.down,
+    goalX: 8,
+    goalY: 8,
+    hint: 'Самая длинная вертикальная змейка без циклов: ряд из восьми шагов проходи функцией «пять шагов» плюс три шага.',
+  ),
+  // 42: крепость — обход правой рукой с условием «если впереди стена».
+  MazeLevel(
+    cols: 6,
+    rows: 6,
+    walls: _walls(6, [
+      [1, 1],
+      [2, 1],
+      [3, 1],
+      [1, 2],
+      [3, 2],
+      [1, 3],
+      [2, 3],
+      [3, 3],
+    ]),
+    startX: 0,
+    startY: 0,
+    startDir: Direction.right,
+    goalX: 0,
+    goalY: 2,
+    hint: 'Объезди крепость по правой руке: «Если впереди стена — направо, вперёд». Прямые участки — обычные шаги!',
+  ),
+  // 43: змейка через четыре высокие перегородки.
+  MazeLevel(
+    cols: 9,
+    rows: 9,
+    walls: _walls(9, [
+      [2, 0],
+      [2, 1],
+      [2, 2],
+      [2, 3],
+      [2, 4],
+      [2, 5],
+      [2, 6],
+      [2, 7],
+      [4, 1],
+      [4, 2],
+      [4, 3],
+      [4, 4],
+      [4, 5],
+      [4, 6],
+      [4, 7],
+      [4, 8],
+      [6, 0],
+      [6, 1],
+      [6, 2],
+      [6, 3],
+      [6, 4],
+      [6, 5],
+      [6, 6],
+      [6, 7],
+    ]),
+    startX: 0,
+    startY: 0,
+    startDir: Direction.right,
+    goalX: 8,
+    goalY: 8,
+    hint: 'Четыре высокие перегородки с проёмами то сверху, то снизу. Длинные участки — циклами, повороты — по одному!',
+  ),
+  // 44: змейка-обходчик — условие «обойди стену» в цикле.
+  MazeLevel(
+    cols: 9,
+    rows: 5,
+    walls: _walls(9, [
+      [2, 0],
+      [4, 1],
+      [6, 2],
+    ]),
+    startX: 0,
+    startY: 0,
+    startDir: Direction.right,
+    goalX: 8,
+    goalY: 3,
+    hint: 'Умная змейка: «Если впереди стена — направо, вперёд, налево», а потом шаг вперёд. Один цикл — и змейка сама обойдёт все камни!',
+  ),
+  // 45: финал — большая змейка по четырём перегородкам.
+  MazeLevel(
+    cols: 10,
+    rows: 6,
+    walls: _walls(10, [
+      [1, 2],
+      [2, 2],
+      [3, 2],
+      [4, 2],
+      [5, 2],
+      [6, 2],
+      [7, 2],
+      [8, 2],
+      [9, 2],
+      [0, 4],
+      [1, 4],
+      [2, 4],
+      [3, 4],
+      [4, 4],
+      [5, 4],
+      [6, 4],
+      [7, 4],
+      [8, 4],
+    ]),
+    startX: 0,
+    startY: 0,
+    startDir: Direction.right,
+    goalX: 0,
+    goalY: 5,
+    hint: 'Финальный маршрут: четыре длинных ряда по краям перегородок. Собери из циклов — и к флажку!',
+  ),
 ];
+
+/// Уровни, где циклы отключены: робота ведёт только «Моя функция»
+/// (индексы с нуля).
+const Set<int> _noLoopLevelIndexes = {35, 36, 37, 38, 39, 40};
 
 /// Уровни игры (открыты для автотестов, проверяющих проходимость).
 List<MazeLevel> get blockLevels => _blockLevels;
@@ -404,6 +1230,7 @@ class BlocksGame extends StatefulWidget {
 class _BlocksGameState extends State<BlocksGame> {
   late MazeLevel _level;
   final List<BlockNode> _program = [];
+  FunctionDef? _function;
 
   int _x = 0;
   int _y = 0;
@@ -420,8 +1247,11 @@ class _BlocksGameState extends State<BlocksGame> {
     title: 'Программируй блоками',
     subtitle: '',
     emoji: '📦',
-    levelCount: 15,
+    levelCount: 45,
   );
+
+  /// На этих уровнях циклы и условия отключены — только «Моя функция».
+  bool get _noLoops => _noLoopLevelIndexes.contains(widget.levelIndex);
 
   @override
   void initState() {
@@ -446,6 +1276,7 @@ class _BlocksGameState extends State<BlocksGame> {
   void _restart() {
     setState(() {
       _program.clear();
+      _function = null;
       _failedRuns = 0;
       _won = false;
       _crashed = false;
@@ -457,6 +1288,14 @@ class _BlocksGameState extends State<BlocksGame> {
 
   Future<void> _run() async {
     if (_program.isEmpty || _running || _won) return;
+    final error = _validateProgram();
+    if (error != null) {
+      setState(() {
+        _status = error;
+        _failedRuns++;
+      });
+      return;
+    }
     setState(() {
       _running = true;
       _crashed = false;
@@ -490,6 +1329,21 @@ class _BlocksGameState extends State<BlocksGame> {
     }
   }
 
+  /// Проверка «моей функции» перед запуском (лимиты 2–5 команд).
+  String? _validateProgram() {
+    final function = _function;
+    if (function == null) return null;
+    if (countFunctionCalls(_program, function) == 0) return null;
+    final count = function.body.length;
+    if (count < kFunctionMinCommands) {
+      return 'Добавь в «Мою функцию» от 2 до 5 команд 🙂';
+    }
+    if (count > kFunctionMaxCommands) {
+      return 'В «Моей функции» может быть не больше 5 команд 🙂';
+    }
+    return null;
+  }
+
   /// Выполняет список блоков пошагово с анимацией.
   /// Возвращает false, если робот врезался или достигнут лимит шагов.
   Future<bool> _exec(List<BlockNode> nodes) async {
@@ -512,6 +1366,9 @@ class _BlocksGameState extends State<BlocksGame> {
           if (_wallAhead()) {
             if (!await _exec(node.body)) return false;
           }
+        case FunctionCallBlock():
+          // Вызов разворачивается в команды «моей функции».
+          if (!await _exec(node.function.body)) return false;
       }
     }
     return true;
@@ -638,6 +1495,117 @@ class _BlocksGameState extends State<BlocksGame> {
     );
   }
 
+  /// Создать «мою функцию» (пока без вызовов — команды добавит ребёнок).
+  void _createFunction() {
+    setState(() {
+      _function = FunctionDef(icon: '🅰️');
+      _status = 'Собери команды внутри «Моей функции» — от 2 до 5 🙂';
+    });
+  }
+
+  /// Удалить функцию вместе со всеми её вызовами.
+  void _removeFunction() {
+    final function = _function;
+    if (function == null) return;
+    setState(() {
+      removeFunctionCalls(_program, function);
+      _function = null;
+      _status = '';
+    });
+  }
+
+  Widget _functionArea(bool canEdit) {
+    final function = _function;
+    if (function == null) {
+      if (!canEdit) return const SizedBox.shrink();
+      return KidButton(
+        label: 'Моя функция',
+        icon: Icons.add_circle_rounded,
+        color: AppTheme.teal,
+        expand: true,
+        onPressed: _createFunction,
+      );
+    }
+    const icons = ['🅰️', '🚀', '⭐', '🔑', '🎁', '🎈'];
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppTheme.teal.withValues(alpha: 0.6), width: 2),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  '${function.icon} Моя функция',
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ),
+              if (canEdit)
+                IconButton(
+                  onPressed: _removeFunction,
+                  icon: const Icon(Icons.delete_outline_rounded, size: 22),
+                  color: Colors.grey,
+                  tooltip: 'Удалить функцию',
+                ),
+            ],
+          ),
+          if (canEdit)
+            Wrap(
+              spacing: 6,
+              runSpacing: 6,
+              children: [
+                for (final icon in icons)
+                  InkWell(
+                    borderRadius: BorderRadius.circular(10),
+                    onTap: () => setState(() {
+                      _function = FunctionDef(icon: icon, body: function.body);
+                    }),
+                    child: Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: icon == function.icon
+                            ? AppTheme.teal.withValues(alpha: 0.20)
+                            : Colors.transparent,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: icon == function.icon
+                              ? AppTheme.teal
+                              : Colors.grey.shade300,
+                        ),
+                      ),
+                      child: Text(icon, style: const TextStyle(fontSize: 20)),
+                    ),
+                  ),
+              ],
+            ),
+          const SizedBox(height: 4),
+          Text(
+            'Команд: ${function.body.length} из $kFunctionMaxCommands',
+            style: const TextStyle(fontSize: 13, color: Colors.grey),
+          ),
+          const SizedBox(height: 4),
+          BlockEditor(
+            nodes: function.body,
+            commands: kRobotBlocks,
+            enabled: canEdit,
+            onChanged: () => setState(() {}),
+            simpleOnly: true,
+            maxNodes: kFunctionMaxCommands,
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _programArea(bool canEdit) {
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 10, 16, 6),
@@ -651,6 +1619,7 @@ class _BlocksGameState extends State<BlocksGame> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            _functionArea(canEdit),
             const Text(
               '🧱 Программа',
               style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800),
@@ -667,9 +1636,14 @@ class _BlocksGameState extends State<BlocksGame> {
             BlockEditor(
               nodes: _program,
               commands: kRobotBlocks,
-              conditionLabel: 'Если впереди стена',
+              conditionLabel: _noLoops ? null : 'Если впереди стена',
               enabled: canEdit,
               onChanged: () => setState(() {}),
+              function: _function,
+              canCallFunction: _function != null &&
+                  countFunctionCalls(_program, _function!) < kFunctionMaxCalls,
+              onCreateFunction: _function == null ? _createFunction : null,
+              hideContainers: _noLoops,
             ),
           ],
         ),

@@ -2,6 +2,8 @@ import 'package:code_kids/achievements/achievements.dart';
 import 'package:code_kids/models/achievement.dart';
 import 'package:code_kids/screens/achievements_screen.dart';
 import 'package:code_kids/services/achievements_service.dart';
+import 'package:code_kids/services/daily_service.dart';
+import 'package:code_kids/services/mascot_service.dart';
 import 'package:code_kids/services/progress_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -102,6 +104,71 @@ void main() {
       expect(first.map((a) => a.id), contains('first_step'));
       final second = AchievementsService.instance.takeNewlyUnlocked(snap);
       expect(second, isEmpty);
+    });
+  });
+
+  group('условия медалей за наряд и наклейки', () {
+    test('«Первый наряд» открывается за первую покупку в магазине', () {
+      expect(_byId('first_outfit').isUnlocked(const ProgressSnapshot({})),
+          isFalse);
+      expect(
+        _byId('first_outfit')
+            .isUnlocked(const ProgressSnapshot({}, accessoriesOwnedCount: 1)),
+        isTrue,
+      );
+    });
+
+    test('«Коллекционер наклеек» открывается ровно на 10 наклейках', () {
+      expect(
+        _byId('sticker_collector')
+            .isUnlocked(const ProgressSnapshot({}, stickerUnlockedCount: 9)),
+        isFalse,
+      );
+      expect(
+        _byId('sticker_collector')
+            .isUnlocked(const ProgressSnapshot({}, stickerUnlockedCount: 10)),
+        isTrue,
+      );
+    });
+
+    test('copyWith меняет только указанные поля', () {
+      const base = ProgressSnapshot({
+        'maze': [3],
+      }, streak: 2, questsCompleted: 1);
+      final copy = base.copyWith(accessoriesOwnedCount: 3, stickerUnlockedCount: 4);
+
+      expect(copy.stars, base.stars);
+      expect(copy.streak, 2);
+      expect(copy.questsCompleted, 1);
+      expect(copy.accessoriesOwnedCount, 3);
+      expect(copy.stickerUnlockedCount, 4);
+      expect(copy.achievementsUnlocked, 0);
+    });
+  });
+
+  group('currentSnapshot — связка сервисов', () {
+    setUp(() async {
+      SharedPreferences.setMockInitialValues({});
+      await ProgressService.instance.reset();
+      await MascotService.instance.reset();
+      await DailyService.instance.reset();
+    });
+
+    test('покупка наряда попадает в снимок и открывает «Первый наряд»',
+        () async {
+      for (var i = 0; i < 6; i++) {
+        await ProgressService.instance.record('maze', i, 3, 50);
+      }
+
+      expect(_byId('first_outfit').isUnlocked(currentSnapshot()), isFalse);
+
+      await MascotService.instance.buy(accessoryById('hat_cap')!);
+
+      final snap = currentSnapshot();
+      expect(snap.accessoriesOwnedCount, 1);
+      expect(_byId('first_outfit').isUnlocked(snap), isTrue);
+      // Число открытых медалей пересчитывается на «свежем» снимке.
+      expect(snap.achievementsUnlocked, greaterThan(0));
     });
   });
 }

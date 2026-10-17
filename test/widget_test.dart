@@ -37,4 +37,52 @@ void main() {
     expect(progress.isUnlocked('maze', 0), isTrue);
     expect(progress.isUnlocked('maze', 1), isFalse);
   });
+
+  testWidgets('в футере есть входы в «Наряды» и «Наклейки», есть «Песочница»',
+      (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    await tester.pumpWidget(const CodeKidsApp());
+    await tester.pumpAndSettle();
+
+    final scrollable = find.byType(Scrollable).first;
+    await tester.scrollUntilVisible(
+      find.text('Песочница'),
+      260,
+      scrollable: scrollable,
+    );
+    expect(find.text('Песочница'), findsOneWidget);
+    expect(find.text('Пиши любой код и запускай — без заданий!'), findsOneWidget);
+
+    await tester.scrollUntilVisible(
+      find.text('Наряды'),
+      260,
+      scrollable: scrollable,
+    );
+    expect(find.text('Наряды'), findsOneWidget);
+    expect(find.text('Наклейки'), findsOneWidget);
+    expect(find.text('Родителям'), findsOneWidget);
+  });
+
+  testWidgets('из футера открывается магазин нарядов', (tester) async {
+    tester.view.physicalSize = const Size(1200, 2400);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
+
+    SharedPreferences.setMockInitialValues({});
+    await tester.pumpWidget(const CodeKidsApp());
+    await tester.pumpAndSettle();
+
+    await tester.scrollUntilVisible(
+      find.text('Наряды'),
+      260,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.ensureVisible(find.text('Наряды'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Наряды'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('🛒 Наряды'), findsOneWidget);
+    expect(find.text('У тебя: 0 ⭐'), findsOneWidget);
+  });
 }

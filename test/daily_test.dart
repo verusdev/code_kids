@@ -1,4 +1,5 @@
 import 'package:code_kids/services/daily_service.dart';
+import 'package:code_kids/services/profile_service.dart';
 import 'package:code_kids/widgets/daily_card.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -118,6 +119,11 @@ void main() {
   });
 
   group('сохранение', () {
+    // Данные ежедневной активности хранятся отдельно для каждого профиля:
+    // ключ `<base>::<profileId>`, а не старый глобальный ключ.
+    final profileKey =
+        ProfileService.instance.storageKey('code_kids_daily_v1');
+
     test('серия и счётчики дня сохраняются после перезагрузки', () async {
       daily.clock = () => DateTime(2026, 10, 13, 12);
       daily.recordLevel(gameId: 'maze', stars: 3);
@@ -127,17 +133,40 @@ void main() {
 
       // Сохраняем «снимок» хранилища, чистим память и восстанавливаем его.
       final prefs = await SharedPreferences.getInstance();
-      final saved = prefs.getString('code_kids_daily_v1');
+      final saved = prefs.getString(profileKey);
       expect(saved, isNotNull);
       await daily.reset();
       expect(daily.streak, 0);
-      await prefs.setString('code_kids_daily_v1', saved!);
+      await prefs.setString(profileKey, saved!);
       await daily.load();
 
       expect(daily.streak, 1);
       expect(daily.todayLevels, 2);
       expect(daily.todayStars, 5);
       expect(daily.playedToday, isTrue);
+    });
+
+    test('старый глобальный ключ мигрирует в профиль по умолчанию', () async {
+      // Чистое хранилище: профильного ключа ещё нет, есть только старый.
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+      const legacy = '{"today":"2026-10-13","lastActive":"2026-10-13",'
+          '"streak":4,"best":9,"levels":2,"stars":5,"perfect":1,'
+          '"python":0,"quests":1,"questDay":"2026-10-13"}';
+      await prefs.setString('code_kids_daily_v1', legacy);
+
+      await daily.load();
+
+      // Старые «глобальные» данные подхватились профилем по умолчанию.
+      expect(daily.streak, 4);
+      expect(daily.bestStreak, 9);
+      final defaultKey = ProfileService.instance.storageKeyFor(
+        'code_kids_daily_v1',
+        ProfileService.defaultProfileId,
+      );
+      expect(prefs.getString(defaultKey), isNotNull);
+      // Старое значение не удаляем — миграция безопасна и повторяема.
+      expect(prefs.getString('code_kids_daily_v1'), isNotNull);
     });
   });
 }
